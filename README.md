@@ -1,2 +1,3 @@
-# AI_BattleCode
+# Code_Droids
+
 Jack Peterson
