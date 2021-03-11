@@ -1,4 +1,8 @@
-# Battlecode 2020 Scaffold
+# Code_Droids
+
+Matthew Barlow
+Jack Peterson
+Adam Shaw
 
 This is the Battlecode 2020 scaffold, containing an `examplefuncsplayer`. Read https://2020.battlecode.org/getting-started!
 
@@ -24,4 +28,5 @@ This is the Battlecode 2020 scaffold, containing an `examplefuncsplayer`. Read h
     The Unix (OS X/Linux) and Windows versions, respectively, of the Gradle wrapper. These are nifty scripts that you can execute in a terminal to run the Gradle build tasks of this project. If you aren't planning to do command line development, these can be safely ignored.
 - `gradle/`
     Contains files used by the Gradle wrapper scripts. Can be safely ignored.
+
 
