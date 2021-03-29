@@ -3,6 +3,7 @@
 Matthew Barlow
 Jack Peterson
 Adam Shaw
+Aidan Kelley
 
 This is the Battlecode 2020 scaffold, containing an `examplefuncsplayer`. Read https://2020.battlecode.org/getting-started!
 
