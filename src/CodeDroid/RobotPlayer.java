@@ -89,7 +89,7 @@ public strictfp class RobotPlayer {
     }
 
     static void runMiner() throws GameActionException {
-
+        //miner finds location of hq
         if (hq_location == null) {
             RobotInfo[] robots = rc.senseNearbyRobots();
             for (RobotInfo robot : robots) {
