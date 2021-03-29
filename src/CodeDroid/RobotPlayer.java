@@ -90,10 +90,10 @@ public strictfp class RobotPlayer {
 
     static void runMiner() throws GameActionException {
 
-        if(hq_location == null){
+        if (hq_location == null) {
             RobotInfo[] robots = rc.senseNearbyRobots();
-            for(RobotInfo robot : robots){
-                if(robot.type == RobotType.HQ && robot.team == rc.getTeam()){
+            for (RobotInfo robot : robots) {
+                if (robot.type == RobotType.HQ && robot.team == rc.getTeam()) {
                     hq_location = robot.location;
                 }
             }
@@ -101,7 +101,6 @@ public strictfp class RobotPlayer {
             System.out.println("HQ Location: " + hq_location);
         }
         tryBlockchain();
-
 
         // tryBuild(randomSpawnedByMiner(), randomDirection());
         for (Direction dir : directions)
@@ -112,9 +111,15 @@ public strictfp class RobotPlayer {
         for (Direction dir : directions)
             if (tryMine(dir))
                 System.out.println("I mined soup! " + rc.getSoupCarrying());
-
-        if(tryMove(randomDirection()))
+        if (rc.getSoupCarrying() == 100) {
+            System.out.println("at soup limit");
+            Direction directions_to_HQ = rc.getLocation().directionTo(hq_location);
+            if(tryMove(directions_to_HQ)) {
+                System.out.println("I moved towards hq");
+            }
+        } else if (tryMove(randomDirection())) {
             System.out.println("I moved!");
+        }
     }
 
     static void runRefinery() throws GameActionException {
