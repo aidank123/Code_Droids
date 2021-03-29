@@ -1,6 +1,8 @@
-package CodeDroids;
+package CodeDroid;
 import battlecode.common.*;
 
+
+// yooooooo
 public strictfp class RobotPlayer {
     static RobotController rc;
     static MapLocation hq_location;
@@ -262,4 +264,3 @@ public strictfp class RobotPlayer {
         // System.out.println(rc.getRoundMessages(turnCount-1));
     }
 }
-
