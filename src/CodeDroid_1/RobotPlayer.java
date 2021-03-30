@@ -1,4 +1,6 @@
+
 package CodeDroid_1;
+
 import battlecode.common.*;
 
 public strictfp class RobotPlayer {
