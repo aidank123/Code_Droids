@@ -88,7 +88,7 @@ public strictfp class RobotPlayer {
 
     static void runHQ() throws GameActionException {
 
-        //if (numMiners < 10) {
+        if (numMiners < 10) {
             for (Direction dir : directions) {
                 if (tryBuild(RobotType.MINER, dir)) {
                     numMiners++;
@@ -96,7 +96,7 @@ public strictfp class RobotPlayer {
 
             }
         }
-    //}
+    }
 
     static void runMiner() throws GameActionException {
         //miner finds location of hq
@@ -121,15 +121,19 @@ public strictfp class RobotPlayer {
         tryBlockchain();
 
         // tryBuild(randomSpawnedByMiner(), randomDirection());
-        for (Direction dir : directions)
-            tryBuild(RobotType.FULFILLMENT_CENTER, dir);
+//        for (Direction dir : directions)
+//            tryBuild(RobotType.FULFILLMENT_CENTER, dir);
         for (Direction dir : directions)
             if (tryRefine(dir))
                 System.out.println("I refined soup! " + rc.getTeamSoup());
         for (Direction dir : directions)
             if (tryMine(dir))
                 System.out.println("I mined soup! " + rc.getSoupCarrying());
-
+        if(!nearbyRobot(RobotType.DESIGN_SCHOOL)){
+            if(tryBuild(RobotType.DESIGN_SCHOOL, randomDirection())){
+                System.out.println("Created a design school");
+            }
+        }
         if (rc.getSoupCarrying() == RobotType.MINER.soupLimit) {
 
             System.out.println("at soup limit");
@@ -156,7 +160,6 @@ public strictfp class RobotPlayer {
             if(tryBuild(RobotType.LANDSCAPER, dir)){
 
             }
-
         }
     }
 
