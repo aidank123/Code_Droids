@@ -1,4 +1,6 @@
-package CodeDroid;
+
+package CodeDroid_1;
+
 import battlecode.common.*;
 
 public strictfp class RobotPlayer {
@@ -75,6 +77,7 @@ public strictfp class RobotPlayer {
     }
 
     static void runMiner() throws GameActionException {
+
         if (hq_location == null) {
             RobotInfo[] robots = rc.senseNearbyRobots();
             for(RobotInfo robot : robots){

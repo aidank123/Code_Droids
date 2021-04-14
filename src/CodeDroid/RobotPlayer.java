@@ -1,9 +1,12 @@
-package CodeDroids;
+package CodeDroid;
 import battlecode.common.*;
 
+
+// yooooooo
 public strictfp class RobotPlayer {
     static RobotController rc;
     static MapLocation hq_location;
+    static MapLocation enemy_hq_location;
 
     static Direction[] directions = {
             Direction.NORTH,
@@ -19,6 +22,8 @@ public strictfp class RobotPlayer {
             RobotType.FULFILLMENT_CENTER, RobotType.NET_GUN};
 
     static int turnCount;
+    static int numMiners = 0;
+
 
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
@@ -82,44 +87,64 @@ public strictfp class RobotPlayer {
     }
 
     static void runHQ() throws GameActionException {
-        for (Direction dir : directions)
-            tryBuild(RobotType.MINER, dir);
+
+        if (numMiners < 10) {
+            for (Direction dir : directions) {
+                if (tryBuild(RobotType.MINER, dir)) {
+                    numMiners++;
+                }
+
+            }
+        }
     }
 
     static void runMiner() throws GameActionException {
-
-        if(hq_location == null){
+        //miner finds location of hq
+        if (hq_location == null) {
             RobotInfo[] robots = rc.senseNearbyRobots();
-            for(RobotInfo robot : robots){
-                if(robot.type == RobotType.HQ && robot.team == rc.getTeam()){
+            for (RobotInfo robot : robots) {
+                if (robot.type == RobotType.HQ && robot.team == rc.getTeam()) {
                     hq_location = robot.location;
                 }
             }
-        } else {
-            System.out.println("HQ Location: " + hq_location);
+        }
+
+        if (enemy_hq_location == null) {
+            System.out.println("looking for enemy hq");
+            RobotInfo[] robots = rc.senseNearbyRobots();
+            for (RobotInfo robot : robots) {
+                if (robot.type == RobotType.HQ && robot.team == robot.getTeam().opponent()) {
+                    enemy_hq_location = robot.location;
+                }
+            }
         }
         tryBlockchain();
 
-
         // tryBuild(randomSpawnedByMiner(), randomDirection());
-        for (Direction dir : directions)
-            tryBuild(RobotType.FULFILLMENT_CENTER, dir);
+//        for (Direction dir : directions)
+//            tryBuild(RobotType.FULFILLMENT_CENTER, dir);
         for (Direction dir : directions)
             if (tryRefine(dir))
                 System.out.println("I refined soup! " + rc.getTeamSoup());
         for (Direction dir : directions)
             if (tryMine(dir))
                 System.out.println("I mined soup! " + rc.getSoupCarrying());
-       if (rc.getSoupCarrying() == 100) {
+        if(!nearbyRobot(RobotType.DESIGN_SCHOOL)){
+            if(tryBuild(RobotType.DESIGN_SCHOOL, randomDirection())){
+                System.out.println("Created a design school");
+            }
+        }
+        if (rc.getSoupCarrying() == RobotType.MINER.soupLimit) {
+
             System.out.println("at soup limit");
             Direction directions_to_HQ = rc.getLocation().directionTo(hq_location);
-            if(tryMove(directions_to_HQ)) {
+            if (tryMove(directions_to_HQ)) {
                 System.out.println("I moved towards hq");
             }
-        } else if (tryMove(randomDirection())) {
-            System.out.println("I moved!");
+        }  else if (tryMove(randomDirection())) {
+                System.out.println("I moved!");
+            }
         }
-    }
 
     static void runRefinery() throws GameActionException {
         // System.out.println("Pollution: " + rc.sensePollution(rc.getLocation()));
@@ -130,7 +155,12 @@ public strictfp class RobotPlayer {
     }
 
     static void runDesignSchool() throws GameActionException {
+        System.out.println("Trying to build landscaper");
+        for (Direction dir : directions){
+            if(tryBuild(RobotType.LANDSCAPER, dir)){
 
+            }
+        }
     }
 
     static void runFulfillmentCenter() throws GameActionException {
@@ -172,6 +202,15 @@ public strictfp class RobotPlayer {
         return directions[(int) (Math.random() * directions.length)];
     }
 
+    static boolean nearbyRobot(RobotType target) throws GameActionException {
+        RobotInfo[] robots = rc.senseNearbyRobots();
+        for(RobotInfo r : robots){
+            if(r.getType() == target){
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Returns a random RobotType spawned by miners.
      *
@@ -268,4 +307,3 @@ public strictfp class RobotPlayer {
         // System.out.println(rc.getRoundMessages(turnCount-1));
     }
 }
-
