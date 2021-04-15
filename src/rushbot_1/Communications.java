@@ -6,6 +6,7 @@ import battlecode.common.Transaction;
 
 public class Communications extends RobotPlayer {
 
+    //secret codes for each type of robot
     static final int HQSecret = 1576;
     static final int MinerSecret = 7207;
     static final int RefinerySecret = 6286;
@@ -15,6 +16,8 @@ public class Communications extends RobotPlayer {
     static final int LandscaperSecret = 8290;
     static final int DeliveryDroneSecret = 1389;
     static final int NetGunSecret = 5324;
+
+    //secret code for team chat
     static final int TeamSecret = 2040;
 
 

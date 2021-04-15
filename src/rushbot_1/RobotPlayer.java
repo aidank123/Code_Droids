@@ -16,6 +16,8 @@ public strictfp class RobotPlayer {
     static MapLocation enHQ3;
     static ArrayList<MapLocation> visited = new ArrayList<MapLocation>();
 
+    //all lists of current stationary robot positions
+
 
     static Direction[] directions = {
             Direction.NORTH,
@@ -228,6 +230,21 @@ public strictfp class RobotPlayer {
      *
      * @return a random RobotType
      */
+
+    static boolean goTo(Direction dir) throws GameActionException {
+        Direction[] toTry = {dir, dir.rotateLeft(), dir.rotateRight(), dir.rotateLeft().rotateLeft(), dir.rotateRight().rotateRight()};
+        for (Direction d : toTry) {
+            if (tryMove(d)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean goTo(MapLocation destination) throws GameActionException{
+        return goTo(rc.getLocation().directionTo(destination));
+    }
+
     static RobotType randomSpawnedByMiner() {
         return spawnedByMiner[(int) (Math.random() * spawnedByMiner.length)];
     }
