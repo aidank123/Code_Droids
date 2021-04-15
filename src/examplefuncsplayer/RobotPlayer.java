@@ -5,14 +5,14 @@ public strictfp class RobotPlayer {
     static RobotController rc;
 
     static Direction[] directions = {
-        Direction.NORTH,
-        Direction.NORTHEAST,
-        Direction.EAST,
-        Direction.SOUTHEAST,
-        Direction.SOUTH,
-        Direction.SOUTHWEST,
-        Direction.WEST,
-        Direction.NORTHWEST
+            Direction.NORTH,
+            Direction.NORTHEAST,
+            Direction.EAST,
+            Direction.SOUTHEAST,
+            Direction.SOUTH,
+            Direction.SOUTHWEST,
+            Direction.WEST,
+            Direction.NORTHWEST
     };
     static RobotType[] spawnedByMiner = {RobotType.REFINERY, RobotType.VAPORATOR, RobotType.DESIGN_SCHOOL,
             RobotType.FULFILLMENT_CENTER, RobotType.NET_GUN};
@@ -41,15 +41,33 @@ public strictfp class RobotPlayer {
                 // You can add the missing ones or rewrite this into your own control structure.
                 System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
                 switch (rc.getType()) {
-                    case HQ:                 runHQ();                break;
-                    case MINER:              runMiner();             break;
-                    case REFINERY:           runRefinery();          break;
-                    case VAPORATOR:          runVaporator();         break;
-                    case DESIGN_SCHOOL:      runDesignSchool();      break;
-                    case FULFILLMENT_CENTER: runFulfillmentCenter(); break;
-                    case LANDSCAPER:         runLandscaper();        break;
-                    case DELIVERY_DRONE:     runDeliveryDrone();     break;
-                    case NET_GUN:            runNetGun();            break;
+                    case HQ:
+                        runHQ();
+                        break;
+                    case MINER:
+                        runMiner();
+                        break;
+                    case REFINERY:
+                        runRefinery();
+                        break;
+                    case VAPORATOR:
+                        runVaporator();
+                        break;
+                    case DESIGN_SCHOOL:
+                        runDesignSchool();
+                        break;
+                    case FULFILLMENT_CENTER:
+                        runFulfillmentCenter();
+                        break;
+                    case LANDSCAPER:
+                        runLandscaper();
+                        break;
+                    case DELIVERY_DRONE:
+                        runDeliveryDrone();
+                        break;
+                    case NET_GUN:
+                        runNetGun();
+                        break;
                 }
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
@@ -70,8 +88,7 @@ public strictfp class RobotPlayer {
     static void runMiner() throws GameActionException {
         tryBlockchain();
         tryMove(randomDirection());
-        if (tryMove(randomDirection()))
-            System.out.println("I moved!");
+
         // tryBuild(randomSpawnedByMiner(), randomDirection());
         for (Direction dir : directions)
             tryBuild(RobotType.FULFILLMENT_CENTER, dir);
@@ -81,7 +98,10 @@ public strictfp class RobotPlayer {
         for (Direction dir : directions)
             if (tryMine(dir))
                 System.out.println("I mined soup! " + rc.getSoupCarrying());
-    }
+
+        if(tryMove(randomDirection()))
+            System.out.println("I moved!");
+}
 
     static void runRefinery() throws GameActionException {
         // System.out.println("Pollution: " + rc.sensePollution(rc.getLocation()));
