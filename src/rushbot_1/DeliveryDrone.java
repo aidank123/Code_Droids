@@ -5,6 +5,13 @@ import battlecode.common.*;
 public class DeliveryDrone extends RobotPlayer {
 
     public static void runDeliveryDrone() throws GameActionException {
+
+        //step 1 set hq location
+        if(hq_location == null){
+            Communications.getHQLocation();
+            setEnemy_hq_location();
+        }
+
 //        Team enemy = rc.getTeam().opponent();
 //        if (!rc.isCurrentlyHoldingUnit()) {
 //            // See if there are any enemy robots within capturing range
