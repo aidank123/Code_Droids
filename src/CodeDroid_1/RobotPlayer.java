@@ -14,7 +14,6 @@ public strictfp class RobotPlayer {
     static MapLocation enHQ2;
     static MapLocation enHQ3;
     static ArrayList<MapLocation> visited = new ArrayList<MapLocation>();
-    static ArrayList<MapLocation> netgun = new ArrayList<MapLocation>();
 
     static Direction[] directions = {
         Direction.NORTH,
@@ -261,24 +260,30 @@ public strictfp class RobotPlayer {
     }
 
     static void runMiner() throws GameActionException {
+        System.out.println("HQ Location:" + hq_location);
+        System.out.println("Enemy HQ Location:" + enemy_hq_location);
+//        for (int i = 0; i < visited.size(); i++){
+//
+//            System.out.println(visited.get(i));
+//        }
 
-        if (hq_location == null) {
-            RobotInfo[] robots = rc.senseNearbyRobots();
-            for(RobotInfo robot : robots){
-                if (robot.type == RobotType.HQ && robot.team == rc.getTeam()) {
-                    hq_location = robot.location;
-                }
-            }
-        } else{
-            System.out.println("HQ Location: " + hq_location);
+        if(hq_location == null){
+            getHQLocation();
+            setEnemy_hq_location();
+        }
+
+        else if(enemy_hq_location == null && hq_location != null){
+            getEnemyHQLocation();
+            //System.out.println("Searching for enemy hq");
+            findEnHQ();
         }
 
         tryBlockchain();
 
 
-        //tryMove(randomDirection());
-       // for (Direction dir : directions)
-       //     tryBuild(RobotType.FULFILLMENT_CENTER, dir);
+        tryMove(randomDirection());
+        for (Direction dir : directions)
+            tryBuild(RobotType.FULFILLMENT_CENTER, dir);
         for (Direction dir : directions)
             if (tryRefine(dir))
                 System.out.println("I refined soup! " + rc.getTeamSoup());
@@ -360,7 +365,7 @@ public strictfp class RobotPlayer {
 
                 move_chosen = randomDirection();
 
-                while (tryMove(move_chosen) == false || (visited.contains(rc.getLocation()) == true || (netgun.contains(rc.getLocation()) == false))) {
+                while (tryMove(move_chosen) == false || (visited.contains(rc.getLocation()) == true)) {
                     if (tryMove(randomDirection()) == true) {
                         //RobotInfo[] nets = rc.senseNearbyRobots(GameConstants.DELIVERY_DRONE_PICKUP_RADIUS_SQUARED, enemy);
                         //for(RobotInfo robot: nets){
