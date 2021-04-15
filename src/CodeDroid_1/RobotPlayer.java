@@ -1,12 +1,9 @@
-
-package CodeDroid_1;
-
 import battlecode.common.*;
 
 public strictfp class RobotPlayer {
     static RobotController rc;
     static MapLocation hq_location;
-
+    static MapLocation enemyloc;
     static Direction[] directions = {
         Direction.NORTH,
         Direction.NORTHEAST,
@@ -22,7 +19,7 @@ public strictfp class RobotPlayer {
 
     static int turnCount;
     static int numMiners = 0;
-
+    static int dronecount = 0;
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
      * If this method returns, the robot dies!
@@ -73,6 +70,12 @@ public strictfp class RobotPlayer {
                 if (tryBuild(RobotType.MINER, dir)) {
                     numMiners++;
                 }
+        }
+        RobotInfo[] robots = rc.senseNearbyRobots(GameConstants.NET_GUN_SHOOT_RADIUS_SQUARED);
+        for (RobotInfo robot : robots) {
+            if (robot.team != rc.getTeam() && robot.type == RobotType.DELIVERY_DRONE) {
+                rc.shootUnit(robot.getID());
+            }
         }
     }
 
@@ -128,16 +131,24 @@ public strictfp class RobotPlayer {
 
     static void runDesignSchool() throws GameActionException {
             for(Direction dir : directions){
-                if(tryBuild(RobotType.LANDSCAPER, dir)){
-                    System.out.println("Made a landscaper");
+                if(dronecount < 2) {
+                    if (tryBuild(RobotType.LANDSCAPER, dir)) {
+                        System.out.println("Made a landscaper");
+                        dronecount++;
+                    }
+                }else{
+                    System.out.print("They are already 2 drones");
                 }
             }
 
     }
 
     static void runFulfillmentCenter() throws GameActionException {
-        for (Direction dir : directions)
-            tryBuild(RobotType.DELIVERY_DRONE, dir);
+        for (Direction dir : directions) {
+            if (tryBuild(RobotType.DELIVERY_DRONE, dir)) {
+                System.out.println("Made a Delivery Drone");
+            }
+        }
     }
 
     static void runLandscaper() throws GameActionException {
@@ -145,15 +156,24 @@ public strictfp class RobotPlayer {
     }
 
     static void runDeliveryDrone() throws GameActionException {
+        MapLocation cowloc = null;
         Team enemy = rc.getTeam().opponent();
         if (!rc.isCurrentlyHoldingUnit()) {
             // See if there are any enemy robots within capturing range
             RobotInfo[] robots = rc.senseNearbyRobots(GameConstants.DELIVERY_DRONE_PICKUP_RADIUS_SQUARED, enemy);
-
             if (robots.length > 0) {
+                for (RobotInfo robot : robots) {
+                    //check all in radius and check for any cows
+                    if (robot.type == RobotType.COW) {
+                        //if robot in list is a cow then mark location
+                        cowloc = robot.location;
+                    }
+                }
+                //make direction to cow so possible to move there
+                Direction directions_to_cow = rc.getLocation().directionTo(cowloc);
+                tryMove(directions_to_cow);
                 // Pick up a first robot within range
                 rc.pickUpUnit(robots[0].getID());
-                System.out.println("I picked up " + robots[0].getID() + "!");
             }
         } else {
             // No close robots, so search for robots within sight radius
