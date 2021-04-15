@@ -1,9 +1,21 @@
+
+
+package CodeDroid_1;
+
 import battlecode.common.*;
+
+import java.util.ArrayList;
 
 public strictfp class RobotPlayer {
     static RobotController rc;
     static MapLocation hq_location;
-    static MapLocation enemyloc;
+    static MapLocation enemy_hq_location;
+    static MapLocation enHQ1;
+    static MapLocation enHQ2;
+    static MapLocation enHQ3;
+    static ArrayList<MapLocation> visited = new ArrayList<MapLocation>();
+    static ArrayList<MapLocation> netgun = new ArrayList<MapLocation>();
+
     static Direction[] directions = {
         Direction.NORTH,
         Direction.NORTHEAST,
@@ -19,7 +31,13 @@ public strictfp class RobotPlayer {
 
     static int turnCount;
     static int numMiners = 0;
-    static int dronecount = 0;
+    static int numLandscapers = 0;
+    static int numDrones = 0;
+    static int numDesignSchools = 0;
+    static int numRefinery = 0;
+    static int numVaporators = 0;
+    static int numFulfillmentCenters = 0;
+    static int numNetGuns = 0;
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
      * If this method returns, the robot dies!
@@ -63,6 +81,169 @@ public strictfp class RobotPlayer {
             }
         }
     }
+    static void searchGraph() throws GameActionException {
+
+        Direction move_chosen;
+
+        move_chosen = randomDirection();
+
+        while (tryMove(move_chosen) == false || (visited.contains(rc.getLocation()) == true)) {
+            if (tryMove(randomDirection())) {
+                System.out.println("searching");
+            }
+        }
+        visited.add(rc.getLocation());
+        System.out.println("added new location to map");
+        System.out.println(rc.getLocation());
+    }
+    static void setEnemy_hq_location() throws GameActionException {
+
+        int flippedY = rc.getMapHeight() - hq_location.y - 1;
+        int flippedX = rc.getMapWidth() - hq_location.x - 1;
+
+        enHQ1 = new MapLocation(hq_location.x, flippedY);
+        enHQ2 = new MapLocation(flippedX, flippedY);
+        enHQ3 = new MapLocation(flippedX, hq_location.y);
+
+    }
+    static boolean checkEnemyHQLocation(MapLocation m) throws GameActionException {
+
+        if(rc.getLocation().isWithinDistanceSquared(m,5) && enemy_hq_location == null){
+            System.out.println("This location is not the enemy hq");
+            if(m == enHQ1) {
+                enHQ1 = null;
+            } else if (m == enHQ2){
+                enHQ2 = null;
+            } else {
+                enHQ3 = null;
+            }
+            return false;
+        }
+        else {
+
+            return true;
+        }
+    }
+    static void findEnHQ() throws GameActionException {
+
+        RobotInfo[] robots = rc.senseNearbyRobots();
+
+        for (RobotInfo robot : robots) {
+            if (robot.type == RobotType.HQ && robot.team != rc.getTeam()) {
+                enemy_hq_location = robot.location;
+                sendEnemyHQLocation(enemy_hq_location);
+
+            }
+        }
+
+        if (enemy_hq_location == null) {
+            System.out.println("Searching for enemy hq!");
+            if (enHQ1 != null) {
+                if (checkEnemyHQLocation(enHQ1) == true) {
+                    Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ1);
+                    if(tryMove(directions_to_enemy_HQ)){
+                        System.out.println("Moved toward enhq1");
+                    }
+                }
+            }
+            else if (enHQ2 != null) {
+                if (checkEnemyHQLocation(enHQ2) == true) {
+                    Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ2);
+                    if(tryMove(directions_to_enemy_HQ)){
+                        System.out.println("Moved toward enhq2");
+                    }
+                }
+            }
+            else if (enHQ3 != null) {
+                if (checkEnemyHQLocation(enHQ3) == true) {
+                    Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ3);
+                    if(tryMove(directions_to_enemy_HQ)){
+                        System.out.println("Moved toward enhq3");
+                    }
+                }
+            }
+            //System.out.println("searching for possible location 1");
+        }
+
+    }
+    static final int teamSecret = 333333333;
+    static final String[] messageType = {"HQ loc",};
+
+    public static void sendHQLocation(MapLocation m) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = teamSecret;
+        message[1] = 0;
+        message[2] = m.x;
+        message[3] = m.y;
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+    }
+
+    public static void getHQLocation() throws GameActionException {
+        System.out.println("B L O C K C H A I N");
+        //for (int i = 1; i < rc.getRoundNum(); i++) {
+        for (Transaction t : rc.getBlock(1)) {
+            int[] mess = t.getMessage();
+            if (mess[0] == teamSecret && mess[1] == 0) {
+                hq_location = new MapLocation(mess[2], mess[3]);
+            }
+        }
+    }
+    //}
+
+    public static void sendEnemyHQLocation(MapLocation m) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = teamSecret;
+        message[1] = 1;
+        message[2] = m.x;
+        message[3] = m.y;
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+    }
+
+    public static void getEnemyHQLocation() throws GameActionException {
+        System.out.println("B L O C K C H A I N");
+        for (int i = 1; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] mess = t.getMessage();
+                if (mess[0] == teamSecret && mess[1] == 1) {
+                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                }
+            }
+        }
+    }
+
+
+
+    public static boolean broadcastedCreation = false;
+
+    public static void broadcastDesignSchoolCreation(MapLocation m) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = teamSecret;
+        message[1] = 1;
+        message[2] = m.x;
+        message[3] = m.y;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+            broadcastedCreation = true;
+        }
+    }
+
+    public static void updateUnitCounts() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(rc.getRoundNum() - 1)) {
+                int[] mess = t.getMessage();
+                if (mess[0] == teamSecret && mess[1] == 1) {
+                    numDesignSchools += 1;
+//                    }else if ()
+                }
+            }
+        }
+    }
+
 
     static void runHQ() throws GameActionException {
         if (numMiners < 10) {
@@ -131,10 +312,10 @@ public strictfp class RobotPlayer {
 
     static void runDesignSchool() throws GameActionException {
             for(Direction dir : directions){
-                if(dronecount < 2) {
+                if(numDrones < 6) {
                     if (tryBuild(RobotType.LANDSCAPER, dir)) {
                         System.out.println("Made a landscaper");
-                        dronecount++;
+                        numDrones++;
                     }
                 }else{
                     System.out.print("They are already 2 drones");
@@ -172,14 +353,39 @@ public strictfp class RobotPlayer {
                 //make direction to cow so possible to move there
                 Direction directions_to_cow = rc.getLocation().directionTo(cowloc);
                 tryMove(directions_to_cow);
-                // Pick up a first robot within range
-                rc.pickUpUnit(robots[0].getID());
-            }
+
+            }else{
+
+                Direction move_chosen;
+
+                move_chosen = randomDirection();
+
+                while (tryMove(move_chosen) == false || (visited.contains(rc.getLocation()) == true || (netgun.contains(rc.getLocation()) == false))) {
+                    if (tryMove(randomDirection()) == true) {
+                        //RobotInfo[] nets = rc.senseNearbyRobots(GameConstants.DELIVERY_DRONE_PICKUP_RADIUS_SQUARED, enemy);
+                        //for(RobotInfo robot: nets){
+                         //   if(robot.type == RobotType.NET_GUN);
+                          //  netgun.add(rc.getLocation());
+                        }
+                        System.out.println("searching");
+                    }
+
+                }
+                visited.add(rc.getLocation());
+                System.out.println("added new location to map");
+                System.out.println(rc.getLocation());
+
         } else {
-            // No close robots, so search for robots within sight radius
-            tryMove(randomDirection());
+            Direction drone_to_HQ = rc.getLocation().directionTo(enemy_hq_location);
+            tryMove(drone_to_HQ);
+            if(!tryMove(drone_to_HQ)){
+                rc.dropUnit(Direction.WEST);
+            }
+
+
+            }
         }
-    }
+
 
     static void runNetGun() throws GameActionException {
 
