@@ -9,7 +9,7 @@ public class HQ extends RobotPlayer {
     public static void runHQ() throws GameActionException {
         if (rc.getRoundNum() == 1) {
             //System.out.println(rc.);
-            sendHQLocation(rc.getLocation());
+            Communications.sendHQLocation(rc.getLocation());
 
         }
         else if (numMiners < 10) {

@@ -8,9 +8,6 @@ public class DesignSchool extends RobotPlayer {
 
     public static void runDesignSchool() throws GameActionException {
 
-        if (!broadcastedCreation) {
-            broadcastDesignSchoolCreation(rc.getLocation());
-        }
         for (Direction dir : directions) {
             if (tryBuild(RobotType.LANDSCAPER, dir)) {
                 numLandscapers++;
