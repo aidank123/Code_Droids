@@ -16,7 +16,13 @@ public strictfp class RobotPlayer {
     static MapLocation enHQ3;
     static ArrayList<MapLocation> visited = new ArrayList<MapLocation>();
 
-    //all lists of current stationary robot positions
+//LISTS OF ALL CURRENT STATIONARY ROBOT POSITIONS
+
+    static ArrayList <MapLocation> Design_Schools = new ArrayList<>();
+    static ArrayList <MapLocation> Fulfillment_Centers = new ArrayList<>();
+    static ArrayList <MapLocation> Refineries = new ArrayList<>();
+    static ArrayList <MapLocation> Vaporators = new ArrayList<>();
+    static ArrayList <MapLocation> NetGuns = new ArrayList<>();
 
 
     static Direction[] directions = {

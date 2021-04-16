@@ -24,6 +24,7 @@ public class Communications extends RobotPlayer {
 
     static final String[] messageType = {"HQ loc",};
 
+    //send location of hq
     public static void sendHQLocation(MapLocation m) throws GameActionException {
         int[] message = new int[7];
         message[0] = HQSecret;
@@ -34,7 +35,7 @@ public class Communications extends RobotPlayer {
             rc.submitTransaction(message, 3);
         }
     }
-
+    //access location of hq
     public static void getHQLocation() throws GameActionException {
         System.out.println("B L O C K C H A I N");
         //for (int i = 1; i < rc.getRoundNum(); i++) {
@@ -45,7 +46,6 @@ public class Communications extends RobotPlayer {
             }
         }
     }
-    //}
 
     public static void sendEnemyHQLocation(MapLocation m) throws GameActionException {
         int[] message = new int[7];
@@ -70,22 +70,126 @@ public class Communications extends RobotPlayer {
         }
     }
 
+//THESE METHODS ARE WHAT BROADCAST AND RECEIVE CREATION AND LOCATION OF ALL NEW STATIC ROBOTS
 
-
-    //public static boolean broadcastedCreation = false;
-
-    public static void broadcastDesignSchoolCreation(MapLocation m) throws GameActionException {
+    public static void sendDesignSchoolCreation(MapLocation m) throws GameActionException {
         int[] message = new int[7];
-        message[0] = TeamSecret;
-        message[1] = 1;
+        message[0] = DesignSchoolSecret;
+        message[1] = 0;
         message[2] = m.x;
         message[3] = m.y;
 
         if (rc.canSubmitTransaction(message, 3)) {
             rc.submitTransaction(message, 3);
-            //broadcastedCreation = true;
         }
     }
+
+    public static void getDesignSchoolCreation() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] mess = t.getMessage();
+                if (mess[0] == DesignSchoolSecret && mess[1] == 0) {
+                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                }
+            }
+        }
+    }
+
+
+    public static void sendRefineryCreation(MapLocation m) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = RefinerySecret;
+        message[1] = 0;
+        message[2] = m.x;
+        message[3] = m.y;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+    }
+
+    public static void getRefineryCreation() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] mess = t.getMessage();
+                if (mess[0] == RefinerySecret && mess[1] == 0) {
+                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                }
+            }
+        }
+    }
+
+    public static void sendVaporatorCreation(MapLocation m) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = VaporatorSecret;
+        message[1] = 0;
+        message[2] = m.x;
+        message[3] = m.y;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+    }
+
+    public static void getVaporatorCreation() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] mess = t.getMessage();
+                if (mess[0] == VaporatorSecret && mess[1] == 0) {
+                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                }
+            }
+        }
+    }
+
+    public static void sendFulfillmentCenterCreation(MapLocation m) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = FulfillmentCenterSecret;
+        message[1] = 0;
+        message[2] = m.x;
+        message[3] = m.y;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+    }
+
+    public static void getFulfillmentCenterCreation() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] mess = t.getMessage();
+                if (mess[0] == FulfillmentCenterSecret && mess[1] == 0) {
+                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                }
+            }
+        }
+    }
+
+    public static void sendNetGunCreation(MapLocation m) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = NetGunSecret;
+        message[1] = 0;
+        message[2] = m.x;
+        message[3] = m.y;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+    }
+
+    public static void getNetGunCreation() throws GameActionException {
+        for (int i = 1; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] mess = t.getMessage();
+                if (mess[0] == NetGunSecret && mess[1] == 0) {
+                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                }
+            }
+        }
+    }
+
+//THESE METHODS ARE WHAT ACCESS THE LOCATION OF ALL NEW STATIC ROBOTS
+
 
     public static void updateUnitCounts() throws GameActionException {
         for (int i = 1; i < rc.getRoundNum(); i++) {

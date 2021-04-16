@@ -20,11 +20,11 @@ public class Miner extends RobotPlayer {
             setEnemy_hq_location();
         }
 
-//        else if(enemy_hq_location == null && hq_location != null){
-//            Communications.getEnemyHQLocation();
-//            //System.out.println("Searching for enemy hq");
-//            findEnHQ();
-//        }
+        else if(enemy_hq_location == null && hq_location != null){
+            Communications.getEnemyHQLocation();
+            //System.out.println("Searching for enemy hq");
+            findEnHQ();
+        }
 //        m[turnCount] = new MapLocation(rc.getLocation().x,rc.getLocation().y);
 //        System.out.println("visited spot: " + m[turnCount]);
         //miner finds location of hq

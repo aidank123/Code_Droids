@@ -8,6 +8,7 @@ public class HQ extends RobotPlayer {
 
     public static void runHQ() throws GameActionException {
 
+
         System.out.println("Number of miners: " + numMiners);
         System.out.println("Number of DesignSchools: " + numDesignSchools);
 
