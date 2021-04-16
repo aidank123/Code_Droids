@@ -70,7 +70,7 @@ public class Communications extends RobotPlayer {
         }
     }
 
-//THESE METHODS ARE WHAT BROADCAST AND RECEIVE CREATION AND LOCATION OF ALL NEW STATIC ROBOTS
+//THESE METHODS ARE WHAT BROADCAST AND RECEIVE CREATION AND LOCATION OF ALL NEW STATIC ROBOTS (BUILDINGS)
 
     public static void sendDesignSchoolCreation(MapLocation m) throws GameActionException {
         int[] message = new int[7];
@@ -84,15 +84,17 @@ public class Communications extends RobotPlayer {
         }
     }
 
-    public static void getDesignSchoolCreation() throws GameActionException {
-        for (int i = 1; i < rc.getRoundNum(); i++) {
+    public static boolean getDesignSchoolCreation() throws GameActionException {
+        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
             for (Transaction t : rc.getBlock(i)) {
                 int[] mess = t.getMessage();
                 if (mess[0] == DesignSchoolSecret && mess[1] == 0) {
-                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                    Design_Schools.add(new MapLocation(mess[2], mess[3]));
+                    return true;
                 }
             }
         }
+        return false;
     }
 
 
@@ -108,15 +110,17 @@ public class Communications extends RobotPlayer {
         }
     }
 
-    public static void getRefineryCreation() throws GameActionException {
-        for (int i = 1; i < rc.getRoundNum(); i++) {
+    public static boolean getRefineryCreation() throws GameActionException {
+        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
             for (Transaction t : rc.getBlock(i)) {
                 int[] mess = t.getMessage();
                 if (mess[0] == RefinerySecret && mess[1] == 0) {
-                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                   Refineries.add(new MapLocation(mess[2], mess[3]));
+                   return true;
                 }
             }
         }
+        return false;
     }
 
     public static void sendVaporatorCreation(MapLocation m) throws GameActionException {
@@ -131,15 +135,17 @@ public class Communications extends RobotPlayer {
         }
     }
 
-    public static void getVaporatorCreation() throws GameActionException {
-        for (int i = 1; i < rc.getRoundNum(); i++) {
+    public static boolean getVaporatorCreation() throws GameActionException {
+        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
             for (Transaction t : rc.getBlock(i)) {
                 int[] mess = t.getMessage();
                 if (mess[0] == VaporatorSecret && mess[1] == 0) {
-                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                    Vaporators.add(new MapLocation(mess[2], mess[3]));
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     public static void sendFulfillmentCenterCreation(MapLocation m) throws GameActionException {
@@ -154,15 +160,17 @@ public class Communications extends RobotPlayer {
         }
     }
 
-    public static void getFulfillmentCenterCreation() throws GameActionException {
-        for (int i = 1; i < rc.getRoundNum(); i++) {
+    public static boolean getFulfillmentCenterCreation() throws GameActionException {
+        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
             for (Transaction t : rc.getBlock(i)) {
                 int[] mess = t.getMessage();
                 if (mess[0] == FulfillmentCenterSecret && mess[1] == 0) {
-                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                    Fulfillment_Centers.add(new MapLocation(mess[2], mess[3]));
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     public static void sendNetGunCreation(MapLocation m) throws GameActionException {
@@ -177,27 +185,40 @@ public class Communications extends RobotPlayer {
         }
     }
 
-    public static void getNetGunCreation() throws GameActionException {
-        for (int i = 1; i < rc.getRoundNum(); i++) {
+    public static boolean getNetGunCreation() throws GameActionException {
+        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
             for (Transaction t : rc.getBlock(i)) {
                 int[] mess = t.getMessage();
                 if (mess[0] == NetGunSecret && mess[1] == 0) {
-                    enemy_hq_location = new MapLocation(mess[2], mess[3]);
+                    //add this netgun to the list of netguns
+                    NetGuns.add(new MapLocation(mess[2], mess[3]));
+                    return true;
                 }
             }
         }
+        return false;
     }
 
-//THESE METHODS ARE WHAT ACCESS THE LOCATION OF ALL NEW STATIC ROBOTS
+//THIS METHOD CALLS ALL OF THE METHODS ABOVE AND SHOULD UPDATE THE UNIT COUNTS WHEN CALLED BY EACH ROBOT
+// Each robot will wait 10 rounds to check the blockchain, then will check the previous 10 rounds for updates
 
-
-    public static void updateUnitCounts() throws GameActionException {
-        for (int i = 1; i < rc.getRoundNum(); i++) {
-            for (Transaction t : rc.getBlock(rc.getRoundNum() - 1)) {
+    public static void updateBuildingCounts() throws GameActionException {
+        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
                 int[] mess = t.getMessage();
-                if (mess[0] == TeamSecret && mess[1] == 1) {
-                    numDesignSchools += 1;
-//                    }else if ()
+
+                switch(mess[0]){
+                    case DeliveryDroneSecret:
+                        if(mess[1] == 0){
+                            numDrones++;
+                            System.out.println("Messaged recieved: one drone added to count");
+                        }
+
+                    case DesignSchoolSecret:
+                        if(mess[1] == 0){
+                            numDesignSchools++;
+                            System.out.println("Messaged recieved: one design school added to count");
+                        }
                 }
             }
         }
