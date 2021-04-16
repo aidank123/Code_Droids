@@ -8,6 +8,9 @@ import battlecode.common.*;
 // message [1] = 1 ==> broadcasted enemy hq
 public strictfp class RobotPlayer {
 
+    //int that will keep track of the soup bid for submitting a blockchain message
+    static final int message_cost = 3;
+
     static RobotController rc;
     static MapLocation hq_location;
     static MapLocation enemy_hq_location;
