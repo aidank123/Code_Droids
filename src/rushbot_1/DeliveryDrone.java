@@ -10,7 +10,11 @@ public class DeliveryDrone extends RobotPlayer {
         if(hq_location == null){
             Communications.getHQLocation();
             setEnemy_hq_location();
+        } else if(enemy_hq_location == null){
+            Communications.getEnemyHQLocation();
         }
+
+
 
 //        Team enemy = rc.getTeam().opponent();
 //        if (!rc.isCurrentlyHoldingUnit()) {

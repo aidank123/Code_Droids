@@ -10,6 +10,8 @@ public class Refinery extends RobotPlayer {
         if(hq_location == null){
             Communications.getHQLocation();
             setEnemy_hq_location();
+        } else if(enemy_hq_location == null){
+            Communications.getEnemyHQLocation();
         }
 
         // System.out.println("Pollution: " + rc.sensePollution(rc.getLocation()));

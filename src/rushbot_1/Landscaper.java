@@ -12,6 +12,8 @@ public class Landscaper extends RobotPlayer {
         if(hq_location == null){
             Communications.getHQLocation();
             setEnemy_hq_location();
+        } else if(enemy_hq_location == null){
+            Communications.getEnemyHQLocation();
         }
 
         //if not carrying dirt, pickup dirt
