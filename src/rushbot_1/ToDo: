@@ -3,5 +3,5 @@ Just finished: You now have the miners checking the blockchain every 10 rounds f
 
 To Do: Keep thinking about how to organize the communication and begin filling in the rest of the framework:
 
----Start by having the miners send a when they build any other type of school. It would be nice to have a fairly
+---Start by having the miners send a when they build any other type of building. It would be nice to have a fairly
 accurate count and memory of all robots and their locations on our team.
