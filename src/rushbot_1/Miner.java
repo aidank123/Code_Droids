@@ -14,10 +14,8 @@ public class Miner extends RobotPlayer {
 //
 //            System.out.println(visited.get(i));
 //        }
-        if(rc.getRoundNum() % 10 == 0) {
-            System.out.println("Checking blockchain for past 10 rounds");
-            Communications.updateBuildingCounts();
-        }
+
+
 
         if(hq_location == null){
             Communications.getHQLocation();
@@ -29,21 +27,10 @@ public class Miner extends RobotPlayer {
             //System.out.println("Searching for enemy hq");
             findEnHQ();
         }
-//        m[turnCount] = new MapLocation(rc.getLocation().x,rc.getLocation().y);
-//        System.out.println("visited spot: " + m[turnCount]);
-        //miner finds location of hq
-
-        //possibleEnemyHQ(hq_location);
-//        if (enemy_hq_location == null) {
-//                System.out.println("looking for enemy hq");
-//                RobotInfo[] robots = rc.senseNearbyRobots();
-//                tryMove(rc.getL=ocation().directionTo(enHQ1));
-//                for (RobotInfo robot : robots) {
-//                    if (robot.type == RobotType.HQ && robot.team == robot.getTeam().opponent()) {
-//                        enemy_hq_location = robot.location;
-//                    }
-//                }
-//        }
+        //CHECKS EVERY OTHER ROUND ON EVEN NUMBERS
+        if(rc.getRoundNum() % 10 == 0) {
+            //Communications.updateUnitCounts(10);
+        }
 
         else {
             System.out.println("other condition");

@@ -11,15 +11,18 @@ public class DesignSchool extends RobotPlayer {
         //step 1 set hq location
         if(hq_location == null){
             Communications.getHQLocation();
-            setEnemy_hq_location();
         }else if(enemy_hq_location == null){
             Communications.getEnemyHQLocation();
         }
-
+        //CHECKS EVERY 20 ROUNDS
+        if(rc.getRoundNum() % 20 == 0) {
+            //Communications.updateUnitCounts(20);
+        }
         for (Direction dir : directions) {
-            if (tryBuild(RobotType.LANDSCAPER, dir)) {
-                numLandscapers++;
-
+            if (rc.canBuildRobot((RobotType.LANDSCAPER),dir) && rc.getTeamSoup() >= (RobotType.LANDSCAPER.cost + message_cost)) {
+                if (tryBuild(RobotType.LANDSCAPER, dir)) {
+                Communications.sendLandscaperCreation(rc.adjacentLocation(dir));
+            }
             }
         }
     }

@@ -5,3 +5,14 @@ To Do: Keep thinking about how to organize the communication and begin filling i
 
 ---Start by having the miners send a when they build any other type of building. It would be nice to have a fairly
 accurate count and memory of all robots and their locations on our team.
+
+
+-Today's updates: -finished the update unit counts method
+                 -now all robots access the blockchain for messages at different rounds, to save on bytecode costs
+                       * hq checks every round
+                       * miners, landscapers, drones every 10 rounds
+                       * buildings: every 20 rounds
+                 -the hq is the only robot that keeps track of unit counts, because it will be making the decisions
+                 and the individual units dont need to know.
+                 -method shootClosestEnemyDrone() in RobotPlayer can be used by netguns and hq
+                 -started building the hq defense. also added more hq messages to send to team

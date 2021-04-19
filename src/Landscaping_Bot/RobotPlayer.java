@@ -7,20 +7,21 @@ public strictfp class RobotPlayer {
     static MapLocation hq_location;
 
     static Direction[] directions = {
-        Direction.NORTH,
-        Direction.NORTHEAST,
-        Direction.EAST,
-        Direction.SOUTHEAST,
-        Direction.SOUTH,
-        Direction.SOUTHWEST,
-        Direction.WEST,
-        Direction.NORTHWEST
+            Direction.NORTH,
+            Direction.NORTHEAST,
+            Direction.EAST,
+            Direction.SOUTHEAST,
+            Direction.SOUTH,
+            Direction.SOUTHWEST,
+            Direction.WEST,
+            Direction.NORTHWEST
     };
     static RobotType[] spawnedByMiner = {RobotType.REFINERY, RobotType.VAPORATOR, RobotType.DESIGN_SCHOOL,
             RobotType.FULFILLMENT_CENTER, RobotType.NET_GUN};
 
     static int turnCount;
     static int numMiners = 0;
+    static int numDesignSchools = 0;
 
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
@@ -75,7 +76,6 @@ public strictfp class RobotPlayer {
                     hq_location = robot.location;
                 }
             }
-            //TODO later: use blockchain to communicate
         }
     }
 
@@ -90,22 +90,38 @@ public strictfp class RobotPlayer {
 
     static void runMiner() throws GameActionException {
         tryBlockchain();
-
-
         //tryMove(randomDirection());
-       // for (Direction dir : directions)
-       //     tryBuild(RobotType.FULFILLMENT_CENTER, dir);
+        // for (Direction dir : directions)
+        //     tryBuild(RobotType.FULFILLMENT_CENTER, dir);
+
         for (Direction dir : directions)
             if (tryRefine(dir))
                 System.out.println("I refined soup! " + rc.getTeamSoup());
         for (Direction dir : directions)
             if (tryMine(dir))
                 System.out.println("I mined soup! " + rc.getSoupCarrying());
-        if(!nearbyRobot(RobotType.DESIGN_SCHOOL)){
-            if(tryBuild(RobotType.DESIGN_SCHOOL, randomDirection())){
+
+
+        //creating a design school to build landscapers
+        if (!nearbyRobot(RobotType.DESIGN_SCHOOL)) {
+            if (tryBuild(RobotType.DESIGN_SCHOOL, randomDirection())) {
                 System.out.println("Created a design school");
             }
         }
+
+        //creating a refinery for miners to deposit soup quicker
+//            if(!nearbyRobot(RobotType.REFINERY)){
+//                if(tryBuild(RobotType.REFINERY, randomDirection())){
+//                    System.out.println("Created a Refinery");
+//                }
+//            }
+
+        //creating a vaporator
+//        if(!nearbyRobot(RobotType.VAPORATOR)){
+//            if(tryBuild(RobotType.VAPORATOR, randomDirection())){
+//                System.out.println("Created a vaporator");
+//            }
+//        }
         if (rc.getSoupCarrying() == 100) {
             System.out.println("at soup limit");
             Direction directions_to_HQ = rc.getLocation().directionTo(hq_location);
@@ -118,8 +134,13 @@ public strictfp class RobotPlayer {
         }
     }
 
+
     static void runRefinery() throws GameActionException {
         // System.out.println("Pollution: " + rc.sensePollution(rc.getLocation()));
+
+
+
+
     }
 
     static void runVaporator() throws GameActionException {
@@ -127,11 +148,11 @@ public strictfp class RobotPlayer {
     }
 
     static void runDesignSchool() throws GameActionException {
-            for(Direction dir : directions){
-                if(tryBuild(RobotType.LANDSCAPER, dir)){
-                    System.out.println("Made a landscaper");
-                }
+        for(Direction dir : directions){
+            if(tryBuild(RobotType.LANDSCAPER, dir)){
+                System.out.println("Made a landscaper");
             }
+        }
 
     }
 
@@ -146,11 +167,14 @@ public strictfp class RobotPlayer {
         }
         if(hq_location != null){
             MapLocation bestPlaceToBuildWall = null;
-            int lowestElevation = 9999;
+            int lowestElevation = 10000;
             for(Direction dir : directions){
+
                 MapLocation tileToCheck = hq_location.add(dir);
+
                 if(rc.getLocation().distanceSquaredTo(tileToCheck) < 4
                         && rc.canDepositDirt(rc.getLocation().directionTo(tileToCheck))){
+
                     if(rc.senseElevation(tileToCheck) < lowestElevation) {
                         lowestElevation = rc.senseElevation(tileToCheck);
                         bestPlaceToBuildWall = tileToCheck;

@@ -84,20 +84,6 @@ public class Communications extends RobotPlayer {
         }
     }
 
-    public static boolean getDesignSchoolCreation() throws GameActionException {
-        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
-            for (Transaction t : rc.getBlock(i)) {
-                int[] mess = t.getMessage();
-                if (mess[0] == DesignSchoolSecret && mess[1] == 0) {
-                    Design_Schools.add(new MapLocation(mess[2], mess[3]));
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
     public static void sendRefineryCreation(MapLocation m) throws GameActionException {
         int[] message = new int[7];
         message[0] = RefinerySecret;
@@ -108,19 +94,6 @@ public class Communications extends RobotPlayer {
         if (rc.canSubmitTransaction(message, 3)) {
             rc.submitTransaction(message, 3);
         }
-    }
-
-    public static boolean getRefineryCreation() throws GameActionException {
-        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
-            for (Transaction t : rc.getBlock(i)) {
-                int[] mess = t.getMessage();
-                if (mess[0] == RefinerySecret && mess[1] == 0) {
-                   Refineries.add(new MapLocation(mess[2], mess[3]));
-                   return true;
-                }
-            }
-        }
-        return false;
     }
 
     public static void sendVaporatorCreation(MapLocation m) throws GameActionException {
@@ -135,19 +108,6 @@ public class Communications extends RobotPlayer {
         }
     }
 
-    public static boolean getVaporatorCreation() throws GameActionException {
-        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
-            for (Transaction t : rc.getBlock(i)) {
-                int[] mess = t.getMessage();
-                if (mess[0] == VaporatorSecret && mess[1] == 0) {
-                    Vaporators.add(new MapLocation(mess[2], mess[3]));
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public static void sendFulfillmentCenterCreation(MapLocation m) throws GameActionException {
         int[] message = new int[7];
         message[0] = FulfillmentCenterSecret;
@@ -158,19 +118,6 @@ public class Communications extends RobotPlayer {
         if (rc.canSubmitTransaction(message, 3)) {
             rc.submitTransaction(message, 3);
         }
-    }
-
-    public static boolean getFulfillmentCenterCreation() throws GameActionException {
-        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
-            for (Transaction t : rc.getBlock(i)) {
-                int[] mess = t.getMessage();
-                if (mess[0] == FulfillmentCenterSecret && mess[1] == 0) {
-                    Fulfillment_Centers.add(new MapLocation(mess[2], mess[3]));
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public static void sendNetGunCreation(MapLocation m) throws GameActionException {
@@ -184,43 +131,115 @@ public class Communications extends RobotPlayer {
             rc.submitTransaction(message, 3);
         }
     }
+//THESE METHODS BROADCAST AND RECEIVE THE CREATION OF MOVING ROBOTS (MINERS,LANDSCAPERS,DRONES)
 
-    public static boolean getNetGunCreation() throws GameActionException {
-        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
-            for (Transaction t : rc.getBlock(i)) {
-                int[] mess = t.getMessage();
-                if (mess[0] == NetGunSecret && mess[1] == 0) {
-                    //add this netgun to the list of netguns
-                    NetGuns.add(new MapLocation(mess[2], mess[3]));
-                    return true;
-                }
-            }
+    public static void sendMinerCreation(MapLocation m) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = MinerSecret;
+        message[1] = 0;
+        message[2] = m.x;
+        message[3] = m.y;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
         }
-        return false;
     }
+
+    public static void sendLandscaperCreation(MapLocation m) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = LandscaperSecret;
+        message[1] = 0;
+        message[2] = m.x;
+        message[3] = m.y;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+    }
+
+    public static void sendDroneCreation(MapLocation m) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = DeliveryDroneSecret;
+        message[1] = 0;
+        message[2] = m.x;
+        message[3] = m.y;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+    }
+
 
 //THIS METHOD CALLS ALL OF THE METHODS ABOVE AND SHOULD UPDATE THE UNIT COUNTS WHEN CALLED BY EACH ROBOT
 // Each robot will wait 10 rounds to check the blockchain, then will check the previous 10 rounds for updates
 
-    public static void updateBuildingCounts() throws GameActionException {
-        for (int i = rc.getRoundNum() - 10; i < rc.getRoundNum(); i++) {
-            for (Transaction t : rc.getBlock(i)) {
+    public static void updateUnitCounts() throws GameActionException {
+    //CHECKS THE PREVIOUS ROUND
+            for (Transaction t : rc.getBlock(rc.getRoundNum() - 1)) {
                 int[] mess = t.getMessage();
 
                 switch(mess[0]){
                     case DeliveryDroneSecret:
-                        if(mess[1] == 0){
+                        if(mess[1] == 0) {
                             numDrones++;
+//                            Drones.add(rc.getID());
                             System.out.println("Messaged recieved: one drone added to count");
                         }
-
+                        break;
+                    case MinerSecret:
+                        if(mess[1] == 0) {
+                            numMiners++;
+//                            Miners.add(rc.getID());
+                            System.out.println("Messaged recieved: one miner added to count");
+                        }
+                        break;
+                    case LandscaperSecret:
+                        if(mess[1] == 0) {
+                            numLandscapers++;
+//                            Landscapers.add(rc.getID());
+                            System.out.println("Messaged recieved: one landscaper added to count");
+                        }
+                        break;
                     case DesignSchoolSecret:
                         if(mess[1] == 0){
                             numDesignSchools++;
+                            Design_Schools.add(new MapLocation(mess[2], mess[3]));
                             System.out.println("Messaged recieved: one design school added to count");
                         }
+                        break;
+                    case FulfillmentCenterSecret:
+                        if(mess[1] == 0){
+                            numFulfillmentCenters++;
+                            Fulfillment_Centers.add(new MapLocation(mess[2], mess[3]));
+                            System.out.println("Messaged recieved: one fulfilment center added to count");
+                        }
+                        break;
+                    case RefinerySecret:
+                        if(mess[1] == 0){
+                            numRefinery++;
+                            Refineries.add(new MapLocation(mess[2], mess[3]));
+                            System.out.println("Messaged recieved: one refinery added to count");
+                        }
+                        break;
+                    case NetGunSecret:
+                        if(mess[1] == 0){
+                            numNetGuns++;
+                            NetGuns.add(new MapLocation(mess[2], mess[3]));
+                            System.out.println("Messaged recieved: one net gun added to count");
+                        }
+                        break;
+                    case VaporatorSecret:
+                        if(mess[1] == 0){
+                            numVaporators++;
+                            Vaporators.add(new MapLocation(mess[2], mess[3]));
+                            System.out.println("Messaged recieved: one vaporator added to count");
+                        }
+                        break;
                 }
+
             }
         }
+
+
     }
-}
+
