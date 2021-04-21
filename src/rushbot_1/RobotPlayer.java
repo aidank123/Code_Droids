@@ -17,7 +17,7 @@ public strictfp class RobotPlayer {
     static MapLocation enHQ1;
     static MapLocation enHQ2;
     static MapLocation enHQ3;
-    static ArrayList<MapLocation> visited = new ArrayList<MapLocation>();
+    static ArrayList<MapLocation> visited = new ArrayList<>();
 
 //LISTS OF ALL CURRENT STATIONARY ROBOT POSITIONS
 
@@ -32,6 +32,10 @@ public strictfp class RobotPlayer {
 //    static ArrayList <Integer> Miners = new ArrayList<>();
 //    static ArrayList <Integer> Landscapers = new ArrayList<>();
 //    static ArrayList <Integer> Drones = new ArrayList<>();
+
+//Global list that keeps track of the last block of pertinent commands from HQ for this robot (ie. messages for all robots + messages for just miners)
+
+    static ArrayList <Integer> CURRENT_HQ_COMMANDS;
 
     static Direction[] directions = {
             Direction.NORTH,
