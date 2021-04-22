@@ -14,8 +14,11 @@ public class Miner extends RobotPlayer {
 //
 //            System.out.println(visited.get(i));
 //        }
-
-
+        //CHECKS EVERY OTHER ROUND ON EVEN NUMBERS
+        if(rc.getRoundNum() % 2 == 0) {
+            //Communications.updateUnitCounts(10);
+            Communications.receiveCommands();
+        }
 
         if(hq_location == null){
             Communications.getHQLocation();
@@ -27,21 +30,18 @@ public class Miner extends RobotPlayer {
             //System.out.println("Searching for enemy hq");
             findEnHQ();
         }
-        //CHECKS EVERY OTHER ROUND ON EVEN NUMBERS
-        if(rc.getRoundNum() % 2 == 0) {
-            //Communications.updateUnitCounts(10);
-        }
+
 
         else {
-            System.out.println("other condition");
+            //System.out.println("other condition");
             tryBlockchain();
             for (Direction dir : directions)
-                if (tryRefine(dir))
-                    System.out.println("I refined soup! " + rc.getTeamSoup());
+                if (tryRefine(dir)){}
+                    //System.out.println("I refined soup! " + rc.getTeamSoup());
 
             for (Direction dir : directions)
-                if (tryMine(dir))
-                    System.out.println("I mined soup! " + rc.getSoupCarrying());
+                if (tryMine(dir)){}
+                    //System.out.println("I mined soup! " + rc.getSoupCarrying());
 
                 //To do: make it so you cannot build a building if you do not have enough soup to also transmit you are doing so
             if (!nearbyRobot(RobotType.DESIGN_SCHOOL) && numDesignSchools < 1) {
@@ -50,19 +50,19 @@ public class Miner extends RobotPlayer {
 
                     if (rc.canBuildRobot((RobotType.DESIGN_SCHOOL),dir) && rc.getTeamSoup() >= (RobotType.DESIGN_SCHOOL.cost + message_cost)) {
                         if (tryBuild((RobotType.DESIGN_SCHOOL), dir)) {
-                            System.out.println("Created a design school at: " + rc.adjacentLocation(dir));
+                            //System.out.println("Created a design school at: " + rc.adjacentLocation(dir));
                             Communications.sendDesignSchoolCreation(rc.adjacentLocation(dir));
                         }
                     }
             }
             if (rc.getSoupCarrying() == RobotType.MINER.soupLimit) {
-                System.out.println("at soup limit");
+                //System.out.println("at soup limit");
                 Direction directions_to_HQ = rc.getLocation().directionTo(hq_location);
                 if (goTo(directions_to_HQ)) {
-                    System.out.println("I moved towards hq");
+                    //System.out.println("I moved towards hq");
                 }
             } else if (goTo(randomDirection())) {
-                System.out.println("I moved!");
+                //System.out.println("I moved!");
             }
         }
     }

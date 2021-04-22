@@ -126,21 +126,21 @@ public strictfp class RobotPlayer {
     }
 
     //method will search the graph, always choosing the nearest unvisited node, else a random direction
-    static void searchGraph() throws GameActionException {
-
-        Direction move_chosen;
-
-        move_chosen = randomDirection();
-
-        while (tryMove(move_chosen) == false || (visited.contains(rc.getLocation()) == true)) {
-            if (tryMove(randomDirection())) {
-                System.out.println("searching");
-            }
-        }
-        visited.add(rc.getLocation());
-        System.out.println("added new location to map");
-        System.out.println(rc.getLocation());
-    }
+//    static void searchGraph() throws GameActionException {
+//
+//        Direction move_chosen;
+//
+//        move_chosen = randomDirection();
+//
+//        while (tryMove(move_chosen) == false || (visited.contains(rc.getLocation()) == true)) {
+//            if (tryMove(randomDirection())) {
+//                System.out.println("searching");
+//            }
+//        }
+//        visited.add(rc.getLocation());
+//        System.out.println("added new location to map");
+//        System.out.println(rc.getLocation());
+//    }
 
     //method takes our hq location and creates three possible enemy hq locations based on the map
     static void setEnemy_hq_location() throws GameActionException {
@@ -157,7 +157,7 @@ public strictfp class RobotPlayer {
     static boolean checkEnemyHQLocation(MapLocation m) throws GameActionException {
 
         if(rc.getLocation().isWithinDistanceSquared(m,5) && enemy_hq_location == null){
-            System.out.println("This location is not the enemy hq");
+            //System.out.println("This location is not the enemy hq");
             if(m == enHQ1) {
                 enHQ1 = null;
             } else if (m == enHQ2){
@@ -188,12 +188,12 @@ public strictfp class RobotPlayer {
         }
 
         if (enemy_hq_location == null) {
-            System.out.println("Searching for enemy hq!");
+            //System.out.println("Searching for enemy hq!");
             if (enHQ1 != null) {
                 if (checkEnemyHQLocation(enHQ1) == true) {
                     Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ1);
                     if(tryMove(directions_to_enemy_HQ)){
-                        System.out.println("Moved toward enhq1");
+                        //System.out.println("Moved toward enhq1");
                     }
                 }
             }
@@ -201,7 +201,7 @@ public strictfp class RobotPlayer {
                 if (checkEnemyHQLocation(enHQ2) == true) {
                     Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ2);
                     if(tryMove(directions_to_enemy_HQ)){
-                        System.out.println("Moved toward enhq2");
+                        //System.out.println("Moved toward enhq2");
                     }
                 }
             }
@@ -209,7 +209,7 @@ public strictfp class RobotPlayer {
                 if (checkEnemyHQLocation(enHQ3) == true) {
                     Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ3);
                     if(tryMove(directions_to_enemy_HQ)){
-                        System.out.println("Moved toward enhq3");
+                        //System.out.println("Moved toward enhq3");
                     }
                 }
             }

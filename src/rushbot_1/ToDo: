@@ -2,7 +2,11 @@ Do Next:
 
 -check the interpret commands method.
 
--then write the interpret updates method.
+    *works for miners
+
+
+-finish the receiveUpdates() method
+    -you should also decide what types of information you will be transmitting to each type of robot from HQ
 
 
 

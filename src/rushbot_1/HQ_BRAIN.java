@@ -1,5 +1,7 @@
 package rushbot_1;
-
+import battlecode.common.RobotInfo;
+import battlecode.common.Direction;
+import battlecode.common.RobotType;
 import battlecode.common.GameActionException;
 
 public class HQ_BRAIN extends HQ {
@@ -16,14 +18,26 @@ public class HQ_BRAIN extends HQ {
 
     public static void run() throws GameActionException {
 
-        if(turnCount < 10){
+        System.out.println(turnCount);
+        if (turnCount < 50) {
 
-        } else if (turnCount > 10){
-            Communications.sendEntireTeamCommand(EARLY_GAME_RUSH);
-        }else {
 
+            for (Direction dir : directions) {
+                if (rc.canBuildRobot((RobotType.MINER), dir) && rc.getTeamSoup() >= (RobotType.MINER.cost + message_cost)) {
+                    if (tryBuild((RobotType.MINER), dir)) {
+                        Communications.sendMinerCreation(rc.adjacentLocation(dir));
+                    }
+                }
+                }
+
+        }   else if (turnCount == 51) {
+                    Communications.sendEntireTeamCommand(EARLY_GAME_RUSH);
+                } else {
+
+                }
+
+
+            }
         }
 
 
-    }
-}

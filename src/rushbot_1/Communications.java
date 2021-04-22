@@ -32,7 +32,7 @@ public class Communications extends RobotPlayer {
     }
 
     public static void getEnemyHQLocation() throws GameActionException {
-        System.out.println("B L O C K C H A I N");
+        //System.out.println("B L O C K C H A I N");
         for (int i = 1; i < rc.getRoundNum(); i++) {
             for (Transaction t : rc.getBlock(i)) {
                 int[] mess = t.getMessage();
@@ -411,7 +411,111 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = 0;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
+
+//THE FOLLOWING METHOD WILL BE USED BY ALL ROBOTS BUT HQ.
+    /*
+    This method looks at the blockchain and receives all of the necessary updates for each type of robot
+
+    The switch statements follow a hierarchy that say general team messages are more important than specific type of robot
+    messages, just in case multiple of these messages are sent in the blockchain by HQ. After each condition, the updates will be applied
+    to the necessary variables, probably stored in RobotPlayer
+
+    */
+
+    public static void receiveUpdates() throws GameActionException {
+
+
+        switch (rc.getType()) {
+            case MINER:
+                //Miners get updated every other round, so must check the blocks from the previous 2 rounds
+                for (int i = rc.getRoundNum() - 2; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
+
+
+                    }
+                }
+
+                break;
+            case LANDSCAPER:
+                //Landscapers get updated every other round, so must check the blocks from the previous 2 rounds
+                for (int i = rc.getRoundNum() - 2; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
+
+                    }
+                }
+                break;
+            case DELIVERY_DRONE:
+                //Drones get updated every other round, so must check the blocks from the previous 2 rounds
+                for (int i = rc.getRoundNum() - 2; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
+
+                    }
+                }
+                break;
+
+            case DESIGN_SCHOOL:
+                //Design Schools get updated every 20 rounds
+                for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
+
+                    }
+                }
+                break;
+
+            case REFINERY:
+                //Refineries get updated every 20 rounds
+                for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
+
+                    }
+                }
+                break;
+
+            case FULFILLMENT_CENTER:
+                //Fulfillment Centers get updated every 20 rounds
+                for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
+
+                    }
+                }
+                break;
+
+            case VAPORATOR:
+                //Vaporators get updated every 20 rounds
+                for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
+
+                    }
+                }
+                break;
+
+            case NET_GUN:
+                //Netguns get updated every 5 rounds
+                for (int i = rc.getRoundNum() - 5; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
+
+                    }
+                }
+                break;
+
+
+
+        }
+    }
+
 
     //All of the following methods are HQ commands for the team. Updates give the team information, while commands
     //to act a certain way
@@ -426,6 +530,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
     //command sent only to buildings
@@ -439,6 +547,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
     //command sent only to DesignSchools
@@ -452,6 +564,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
     //command sent only to Refineries
@@ -465,6 +581,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
     //command sent only to Fulfillment Centers
@@ -478,6 +598,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
     //command sent only to Vaporators
@@ -491,6 +615,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
     //command sent only to NetGuns
@@ -504,6 +632,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
     //command send to all moving robots (miners, landscapers, drones)
@@ -517,6 +649,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
     //command send to all miners
@@ -530,6 +666,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
     //command send to all landscapers
@@ -543,6 +683,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
     //command send to all drones
@@ -556,6 +700,10 @@ public class Communications extends RobotPlayer {
         message[4] = 0;
         message[5] = 0;
         message[6] = command;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
     }
 
 //THE FOLLOWING METHOD WILL BE USED BY ALL ROBOTS BUT HQ.
@@ -571,60 +719,70 @@ public class Communications extends RobotPlayer {
 
     public static void receiveCommands() throws GameActionException {
 
+
         switch (rc.getType()) {
             case MINER:
                 //Miners get updated every other round, so must check the blocks from the previous 2 rounds
-                for (Transaction t : rc.getBlock(rc.getRoundNum() - 2)) {
-                    int[] mess = t.getMessage();
+                for (int i = rc.getRoundNum() - 2; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
+                        System.out.println(t.getMessage());
 
-                    if (mess[0] == HQSecret && mess[1] == 4) {
-                        switch (mess[2]) {
-                            case (0):
-                                CURRENT_HQ_COMMAND = mess[6];
-                                break;
-                            case (2):
-                                if (mess[3] == 0 || mess[3] == 1) {
+                        if (mess[0] == HQSecret && mess[1] == 4) {
+                            switch (mess[2]) {
+                                case (0):
+                                    System.out.println("Miner received Team command: " + mess[6]);
                                     CURRENT_HQ_COMMAND = mess[6];
-                                }
-                                break;
+                                    break;
+                                case (2):
+                                    if (mess[3] == 0 || mess[3] == 1) {
+                                        System.out.println("Miner received Moving Robot/Miner update: " + mess[6]);
+                                        CURRENT_HQ_COMMAND = mess[6];
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
                 break;
             case LANDSCAPER:
                 //Landscapers get updated every other round, so must check the blocks from the previous 2 rounds
-                for (Transaction t : rc.getBlock(rc.getRoundNum() - 2)) {
-                    int[] mess = t.getMessage();
+                for (int i = rc.getRoundNum() - 2; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
 
-                    if (mess[0] == HQSecret && mess[1] == 4) {
-                        switch (mess[2]) {
-                            case (0):
-                                CURRENT_HQ_COMMAND = mess[6];
-                                break;
-                            case (2):
-                                if (mess[3] == 0 || mess[3] == 2) {
+                        if (mess[0] == HQSecret && mess[1] == 4) {
+                            switch (mess[2]) {
+                                case (0):
                                     CURRENT_HQ_COMMAND = mess[6];
-                                }
-                                break;
+                                    break;
+                                case (2):
+                                    if (mess[3] == 0 || mess[3] == 2) {
+                                        CURRENT_HQ_COMMAND = mess[6];
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
                 break;
             case DELIVERY_DRONE:
                 //Drones get updated every other round, so must check the blocks from the previous 2 rounds
-                for (Transaction t : rc.getBlock(rc.getRoundNum() - 2)) {
-                    int[] mess = t.getMessage();
+                for (int i = rc.getRoundNum() - 2; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
 
-                    if (mess[0] == HQSecret && mess[1] == 4) {
-                        switch (mess[2]) {
-                            case (0):
-                                CURRENT_HQ_COMMAND = mess[6];
-                                break;
-                            case (2):
-                                if (mess[3] == 0 || mess[3] == 3) {
+                        if (mess[0] == HQSecret && mess[1] == 4) {
+                            switch (mess[2]) {
+                                case (0):
                                     CURRENT_HQ_COMMAND = mess[6];
-                                }
-                                break;
+                                    break;
+                                case (2):
+                                    if (mess[3] == 0 || mess[3] == 3) {
+                                        CURRENT_HQ_COMMAND = mess[6];
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
@@ -632,19 +790,21 @@ public class Communications extends RobotPlayer {
 
             case DESIGN_SCHOOL:
                 //Design Schools get updated every 20 rounds
-                for (Transaction t : rc.getBlock(rc.getRoundNum() - 20)) {
-                    int[] mess = t.getMessage();
+                for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
 
-                    if (mess[0] == HQSecret && mess[1] == 4) {
-                        switch (mess[2]) {
-                            case (0):
-                                CURRENT_HQ_COMMAND = mess[6];
-                                break;
-                            case (1):
-                                if (mess[3] == 0 || mess[3] == 1) {
+                        if (mess[0] == HQSecret && mess[1] == 4) {
+                            switch (mess[2]) {
+                                case (0):
                                     CURRENT_HQ_COMMAND = mess[6];
-                                }
-                                break;
+                                    break;
+                                case (1):
+                                    if (mess[3] == 0 || mess[3] == 1) {
+                                        CURRENT_HQ_COMMAND = mess[6];
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
@@ -652,19 +812,21 @@ public class Communications extends RobotPlayer {
 
             case REFINERY:
                 //Refineries get updated every 20 rounds
-                for (Transaction t : rc.getBlock(rc.getRoundNum() - 20)) {
-                    int[] mess = t.getMessage();
+                for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
 
-                    if (mess[0] == HQSecret && mess[1] == 4) {
-                        switch (mess[2]) {
-                            case (0):
-                                CURRENT_HQ_COMMAND = mess[6];
-                                break;
-                            case (1):
-                                if (mess[3] == 0 || mess[3] == 2) {
+                        if (mess[0] == HQSecret && mess[1] == 4) {
+                            switch (mess[2]) {
+                                case (0):
                                     CURRENT_HQ_COMMAND = mess[6];
-                                }
-                                break;
+                                    break;
+                                case (1):
+                                    if (mess[3] == 0 || mess[3] == 2) {
+                                        CURRENT_HQ_COMMAND = mess[6];
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
@@ -672,19 +834,21 @@ public class Communications extends RobotPlayer {
 
             case FULFILLMENT_CENTER:
                 //Fulfillment Centers get updated every 20 rounds
-                for (Transaction t : rc.getBlock(rc.getRoundNum() - 20)) {
-                    int[] mess = t.getMessage();
+                for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
 
-                    if (mess[0] == HQSecret && mess[1] == 4) {
-                        switch (mess[2]) {
-                            case (0):
-                                CURRENT_HQ_COMMAND = mess[6];
-                                break;
-                            case (1):
-                                if (mess[3] == 0 || mess[3] == 3) {
+                        if (mess[0] == HQSecret && mess[1] == 4) {
+                            switch (mess[2]) {
+                                case (0):
                                     CURRENT_HQ_COMMAND = mess[6];
-                                }
-                                break;
+                                    break;
+                                case (1):
+                                    if (mess[3] == 0 || mess[3] == 3) {
+                                        CURRENT_HQ_COMMAND = mess[6];
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
@@ -692,19 +856,21 @@ public class Communications extends RobotPlayer {
 
             case VAPORATOR:
                 //Vaporators get updated every 20 rounds
-                for (Transaction t : rc.getBlock(rc.getRoundNum() - 20)) {
-                    int[] mess = t.getMessage();
+                for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
 
-                    if (mess[0] == HQSecret && mess[1] == 4) {
-                        switch (mess[2]) {
-                            case (0):
-                                CURRENT_HQ_COMMAND = mess[6];
-                                break;
-                            case (1):
-                                if (mess[3] == 0 || mess[3] == 4) {
+                        if (mess[0] == HQSecret && mess[1] == 4) {
+                            switch (mess[2]) {
+                                case (0):
                                     CURRENT_HQ_COMMAND = mess[6];
-                                }
-                                break;
+                                    break;
+                                case (1):
+                                    if (mess[3] == 0 || mess[3] == 4) {
+                                        CURRENT_HQ_COMMAND = mess[6];
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
@@ -712,28 +878,31 @@ public class Communications extends RobotPlayer {
 
             case NET_GUN:
                 //Netguns get updated every 5 rounds
-                for (Transaction t : rc.getBlock(rc.getRoundNum() - 20)) {
-                    int[] mess = t.getMessage();
+                for (int i = rc.getRoundNum() - 5; i < rc.getRoundNum(); i++) {
+                    for (Transaction t : rc.getBlock(i)) {
+                        int[] mess = t.getMessage();
 
-                    if (mess[0] == HQSecret && mess[1] == 4) {
-                        switch (mess[2]) {
-                            case (0):
-                                CURRENT_HQ_COMMAND = mess[6];
-                                break;
-                            case (1):
-                                if (mess[3] == 0 || mess[3] == 5) {
+                        if (mess[0] == HQSecret && mess[1] == 4) {
+                            switch (mess[2]) {
+                                case (0):
                                     CURRENT_HQ_COMMAND = mess[6];
-                                }
-                                break;
+                                    break;
+                                case (1):
+                                    if (mess[3] == 0 || mess[3] == 5) {
+                                        CURRENT_HQ_COMMAND = mess[6];
+                                    }
+                                    break;
+                            }
                         }
                     }
                 }
-                break;
-                    }
+                    break;
 
 
-                }
+
         }
+    }
+}
 
 //at the end of this method, CURRENT_HQ_COMMANDS should be reset to empty
         //if the message relates to the robot, it will add it to its list of current HQ commands
