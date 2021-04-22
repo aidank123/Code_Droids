@@ -33,9 +33,11 @@ public strictfp class RobotPlayer {
 //    static ArrayList <Integer> Landscapers = new ArrayList<>();
 //    static ArrayList <Integer> Drones = new ArrayList<>();
 
-//Global list that keeps track of the last block of pertinent commands from HQ for this robot (ie. messages for all robots + messages for just miners)
+//int that keeps track of the last block of pertinent commands from HQ for this robot.
 
-    static ArrayList <Integer> CURRENT_HQ_COMMANDS;
+//set in the receiveCommands() method in Communications
+
+    static int CURRENT_HQ_COMMAND;
 
     static Direction[] directions = {
             Direction.NORTH,

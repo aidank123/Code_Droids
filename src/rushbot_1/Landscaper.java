@@ -16,8 +16,8 @@ public class Landscaper extends RobotPlayer {
         } else if(enemy_hq_location == null){
             Communications.getEnemyHQLocation();
         }
-        //CHECKS EVERY OTHER ROUND ON EVEN NUMBERS
-        if(rc.getRoundNum() % 10 == 0) {
+        //CHECKS EVERY OTHER ROUND ON ODD NUMBERS
+        if(rc.getRoundNum() % 2 == 1) {
             //Communications.updateUnitCounts(10);
         }
         //if not carrying dirt, pickup dirt
