@@ -8,6 +8,9 @@ import battlecode.common.*;
 // message [1] = 1 ==> broadcasted enemy hq
 public strictfp class RobotPlayer {
 
+//int that will keep track of the soup bid for submitting a blockchain message
+    static final int message_cost = 3;
+
     static RobotController rc;
     static MapLocation hq_location;
     static MapLocation enemy_hq_location;
@@ -16,8 +19,19 @@ public strictfp class RobotPlayer {
     static MapLocation enHQ3;
     static ArrayList<MapLocation> visited = new ArrayList<MapLocation>();
 
-    //all lists of current stationary robot positions
+//LISTS OF ALL CURRENT STATIONARY ROBOT POSITIONS
 
+    static ArrayList <MapLocation> Design_Schools = new ArrayList<>();
+    static ArrayList <MapLocation> Fulfillment_Centers = new ArrayList<>();
+    static ArrayList <MapLocation> Refineries = new ArrayList<>();
+    static ArrayList <MapLocation> Vaporators = new ArrayList<>();
+    static ArrayList <MapLocation> NetGuns = new ArrayList<>();
+
+//LISTS OF ALL CURRENT MOVING ROBOTS, USING THEIR ROBOT IDS SO THEY CAN ALSO BE SORTED
+
+//    static ArrayList <Integer> Miners = new ArrayList<>();
+//    static ArrayList <Integer> Landscapers = new ArrayList<>();
+//    static ArrayList <Integer> Drones = new ArrayList<>();
 
     static Direction[] directions = {
             Direction.NORTH,
@@ -342,6 +356,28 @@ public strictfp class RobotPlayer {
                 rc.submitTransaction(message, 10);
         }
         // System.out.println(rc.getRoundMessages(turnCount-1));
+    }
+
+//VARIOUS ASSORTED METHODS I THINK ALL ROBOTS COULD MAKE USE OF
+
+    //sensing the closest enemy drone robot, given a RobotInfo list robots. Good for hq and netguns
+
+    static void shootClosestEnemyDrone(RobotInfo [] info) throws GameActionException {
+
+        RobotInfo closest_drone = null;
+        for (int i = 0; i < info.length; i++){
+
+            //distance to robot
+            int dist = rc.getLocation().distanceSquaredTo(info[i].location);
+
+            if((info[i].type == RobotType.DELIVERY_DRONE) && dist < (rc.getLocation().distanceSquaredTo(closest_drone.location))){
+                closest_drone = info[i];
+            }
+
+        }
+        if(rc.canShootUnit(closest_drone.ID)){
+            rc.shootUnit(closest_drone.ID);
+        }
     }
 }
 

@@ -8,12 +8,18 @@ public class Landscaper extends RobotPlayer {
 
     public static void runLandscaper() throws GameActionException {
 
+
+
         //step 1 set hq location
         if(hq_location == null){
             Communications.getHQLocation();
-            setEnemy_hq_location();
+        } else if(enemy_hq_location == null){
+            Communications.getEnemyHQLocation();
         }
-
+        //CHECKS EVERY OTHER ROUND ON EVEN NUMBERS
+        if(rc.getRoundNum() % 10 == 0) {
+            //Communications.updateUnitCounts(10);
+        }
         //if not carrying dirt, pickup dirt
 
         if(rc.getDirtCarrying() == 0){

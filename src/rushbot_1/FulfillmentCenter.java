@@ -8,15 +8,22 @@ public class FulfillmentCenter extends RobotPlayer {
 
     public static void runFulfillmentCenter() throws GameActionException {
 
+
         //step 1 set hq location
         if(hq_location == null){
             Communications.getHQLocation();
-            setEnemy_hq_location();
+        } else if(enemy_hq_location == null){
+            Communications.getEnemyHQLocation();
         }
-
+        //CHECKS EVERY 20 ROUNDS
+        if(rc.getRoundNum() % 20 == 2) {
+            //Communications.updateUnitCounts(20);
+        }
         for (Direction dir : directions)
-            if (tryBuild(RobotType.DELIVERY_DRONE, dir)) {
-                numDrones++;
+            if (rc.canBuildRobot((RobotType.DELIVERY_DRONE),dir) && rc.getTeamSoup() >= (RobotType.DELIVERY_DRONE.cost + message_cost)) {
+                if (tryBuild(RobotType.DELIVERY_DRONE, dir)) {
+                    Communications.sendDroneCreation(rc.adjacentLocation(dir));
+                }
             }
 
     }
