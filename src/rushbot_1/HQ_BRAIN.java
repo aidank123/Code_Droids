@@ -10,17 +10,15 @@ public class HQ_BRAIN extends HQ {
     // the HQ run() method which will translate the decision into a message and transmit it to the team
 
 
-    //All secret hq message commands. These will be passed into the communications methods
-    // and placed into messages to the team
-
-    static int DEFEND_HQ = 450;
-    static int EARLY_GAME_RUSH = 145;
 
     public static void run() throws GameActionException {
 
         System.out.println(turnCount);
         if (turnCount < 50) {
 
+            if(turnCount % 10 == 0) {
+                Communications.sendEntireTeamCommand(EARLY_GAME_RUSH);
+            }
 
             for (Direction dir : directions) {
                 if (rc.canBuildRobot((RobotType.MINER), dir) && rc.getTeamSoup() >= (RobotType.MINER.cost + message_cost)) {
@@ -28,10 +26,15 @@ public class HQ_BRAIN extends HQ {
                         Communications.sendMinerCreation(rc.adjacentLocation(dir));
                     }
                 }
-                }
+            }
+            //send the first miner off as a scout
+            if(friendly_robots.length == 1){
+                Communications.sendScoutID(friendly_robots[0].ID);
+            }
+
 
         }   else if (turnCount == 51) {
-                    Communications.sendEntireTeamCommand(EARLY_GAME_RUSH);
+
                 } else {
 
                 }

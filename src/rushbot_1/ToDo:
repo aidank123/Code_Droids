@@ -1,12 +1,21 @@
 Do Next:
 
--check the interpret commands method.
+-Finish the receiveUpdates() method
 
-    *works for miners
+-keep working on early game strategy
+
+-improve miners pathing and soup production
+
+-start only doing trials on chosen maps
 
 
--finish the receiveUpdates() method
-    -you should also decide what types of information you will be transmitting to each type of robot from HQ
+Done today:
+
+    -receiveUpdates() works for miners
+    -added a method called sendScoutID() that has the HQ choose one of the starting miners
+     as a scout and sends their id to the blockchain. This miner is set as a scout until the enemy hq is discovered
+    -added a calculateWaterLevels() method
+    -wrote a findClosestSoup() method, has yet to be implemented by the miners
 
 
 

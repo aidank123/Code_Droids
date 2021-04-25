@@ -246,11 +246,13 @@ public class Communications extends RobotPlayer {
         message[0] = HQSecret;
         message[1] = 1;
         message[2] = 0;
-        //messages will be filled in with necessary information for buildings
-        message[3] = 0;
-        message[4] = 0;
-        message[5] = 0;
-        message[6] = 0;
+        //messages will be filled in with number of buildings, tracked by HQ. These values will be received by the robots to
+        //keep their values updated
+
+        message[3] = numDesignSchools;
+        message[4] = numRefinery;
+        message[5] = numFulfillmentCenters;
+        message[6] = numVaporators;
 
         if (rc.canSubmitTransaction(message, 3)) {
             rc.submitTransaction(message, 3);
@@ -342,10 +344,11 @@ public class Communications extends RobotPlayer {
         message[0] = HQSecret;
         message[1] = 2;
         message[2] = 0;
-        //messages will be filled in with necessary information for all moving robots (miners, landscapers, drones)
-        message[3] = 0;
-        message[4] = 0;
-        message[5] = 0;
+        //messages will be filled in with necessary information for all moving robots (miners, landscapers, drones). This will
+        // be the number of each
+        message[3] = numMiners;
+        message[4] = numLandscapers;
+        message[5] = numDrones;
         message[6] = 0;
 
         if (rc.canSubmitTransaction(message, 3)) {
@@ -433,11 +436,29 @@ public class Communications extends RobotPlayer {
         switch (rc.getType()) {
             case MINER:
                 //Miners get updated every other round, so must check the blocks from the previous 2 rounds
+
+                //miners can take in many updates per round, so there are no breaks after each case in the switch statement
+
                 for (int i = rc.getRoundNum() - 2; i < rc.getRoundNum(); i++) {
                     for (Transaction t : rc.getBlock(i)) {
                         int[] mess = t.getMessage();
-
-
+                        if (mess[0] == HQSecret) {
+                            switch (mess[1]) {
+                                case (3):
+                                    System.out.println("Miner received a general team update");
+                                case (2):
+                                    switch(mess[2]){
+                                        case (0):
+                                            System.out.println("Miner received moving robots update");
+                                            numMiners = mess[3];
+                                            System.out.println("Number of miners is now " + numMiners);
+                                            numLandscapers = mess[4];
+                                            numDrones = mess[5];
+                                        case(1):
+                                            System.out.println("Miner just miners update");
+                               }
+                            }
+                        }
                     }
                 }
 
@@ -902,10 +923,36 @@ public class Communications extends RobotPlayer {
 
         }
     }
+
+    //method to send which robot ID will be the scout at the start of the game
+
+    public static void sendScoutID (int robotID) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = HQSecret;
+        message[1] = 2;
+        message[2] = 1;
+        message[3] = 1;
+        message[4] = robotID;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+    }
+
+    public static int receiveScoutID () throws GameActionException {
+        int scoutID = 0;
+        for (int i = 1; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] mess = t.getMessage();
+                if (mess[0] == HQSecret && mess[1] == 2 && mess[2] == 1 && mess[3] == 1) {
+                    scoutID = mess[4];
+                }
+            }
+        }
+        return scoutID;
+    }
 }
 
 //at the end of this method, CURRENT_HQ_COMMANDS should be reset to empty
         //if the message relates to the robot, it will add it to its list of current HQ commands
-
-
 

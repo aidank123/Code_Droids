@@ -18,6 +18,7 @@ public class Landscaper extends RobotPlayer {
         }
         //CHECKS EVERY OTHER ROUND ON ODD NUMBERS
         if(rc.getRoundNum() % 2 == 1) {
+            Communications.receiveCommands();
             //Communications.updateUnitCounts(10);
         }
         //if not carrying dirt, pickup dirt

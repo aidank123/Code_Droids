@@ -16,6 +16,7 @@ public class Refinery extends RobotPlayer {
 
     //CHECKS EVERY 20 ROUNDS
         if(rc.getRoundNum() % 20 == 4) {
+            Communications.receiveCommands();
             //Communications.updateUnitCounts(20);
         }
         // System.out.println("Pollution: " + rc.sensePollution(rc.getLocation()));

@@ -8,7 +8,19 @@ import battlecode.common.*;
 // message [1] = 1 ==> broadcasted enemy hq
 public strictfp class RobotPlayer {
 
-//int that will keep track of the soup bid for submitting a blockchain message
+
+
+    //All secret hq message commands. These will be passed into the communications methods
+    // and placed into messages to the team
+
+    static int DEFEND_HQ = 450;
+    static int EARLY_GAME_RUSH = 145;
+
+
+    //global int will keep track of the current water level
+    static int current_water_level;
+
+    //int that will keep track of the soup bid for submitting a blockchain message
     static final int message_cost = 3;
 
     static RobotController rc;
@@ -21,11 +33,11 @@ public strictfp class RobotPlayer {
 
 //LISTS OF ALL CURRENT STATIONARY ROBOT POSITIONS
 
-    static ArrayList <MapLocation> Design_Schools = new ArrayList<>();
-    static ArrayList <MapLocation> Fulfillment_Centers = new ArrayList<>();
-    static ArrayList <MapLocation> Refineries = new ArrayList<>();
-    static ArrayList <MapLocation> Vaporators = new ArrayList<>();
-    static ArrayList <MapLocation> NetGuns = new ArrayList<>();
+    static ArrayList<MapLocation> Design_Schools = new ArrayList<>();
+    static ArrayList<MapLocation> Fulfillment_Centers = new ArrayList<>();
+    static ArrayList<MapLocation> Refineries = new ArrayList<>();
+    static ArrayList<MapLocation> Vaporators = new ArrayList<>();
+    static ArrayList<MapLocation> NetGuns = new ArrayList<>();
 
 //LISTS OF ALL CURRENT MOVING ROBOTS, USING THEIR ROBOT IDS SO THEY CAN ALSO BE SORTED
 
@@ -70,6 +82,7 @@ public strictfp class RobotPlayer {
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws GameActionException {
 
+
         // This is the RobotController object. You use it to perform actions from this robot,
         // and to get information on its current status.
         RobotPlayer.rc = rc;
@@ -78,6 +91,7 @@ public strictfp class RobotPlayer {
         System.out.println("I'm a " + rc.getType() + " and I just got created!");
         while (true) {
             turnCount += 1;
+            current_water_level = calculateWaterLevels();
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
                 //visited[turnCount - 1] = new MapLocation(rc.getLocation().x,rc.getLocation().y);
@@ -125,23 +139,6 @@ public strictfp class RobotPlayer {
         }
     }
 
-    //method will search the graph, always choosing the nearest unvisited node, else a random direction
-//    static void searchGraph() throws GameActionException {
-//
-//        Direction move_chosen;
-//
-//        move_chosen = randomDirection();
-//
-//        while (tryMove(move_chosen) == false || (visited.contains(rc.getLocation()) == true)) {
-//            if (tryMove(randomDirection())) {
-//                System.out.println("searching");
-//            }
-//        }
-//        visited.add(rc.getLocation());
-//        System.out.println("added new location to map");
-//        System.out.println(rc.getLocation());
-//    }
-
     //method takes our hq location and creates three possible enemy hq locations based on the map
     static void setEnemy_hq_location() throws GameActionException {
 
@@ -156,23 +153,21 @@ public strictfp class RobotPlayer {
 
     static boolean checkEnemyHQLocation(MapLocation m) throws GameActionException {
 
-        if(rc.getLocation().isWithinDistanceSquared(m,5) && enemy_hq_location == null){
+        if (rc.getLocation().isWithinDistanceSquared(m, 5) && enemy_hq_location == null) {
             //System.out.println("This location is not the enemy hq");
-            if(m == enHQ1) {
+            if (m == enHQ1) {
                 enHQ1 = null;
-            } else if (m == enHQ2){
+            } else if (m == enHQ2) {
                 enHQ2 = null;
             } else {
                 enHQ3 = null;
             }
             return false;
-        }
-        else {
+        } else {
 
             return true;
         }
     }
-
 
 
     static void findEnHQ() throws GameActionException {
@@ -192,23 +187,21 @@ public strictfp class RobotPlayer {
             if (enHQ1 != null) {
                 if (checkEnemyHQLocation(enHQ1) == true) {
                     Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ1);
-                    if(tryMove(directions_to_enemy_HQ)){
+                    if (tryMove(directions_to_enemy_HQ)) {
                         //System.out.println("Moved toward enhq1");
                     }
                 }
-            }
-            else if (enHQ2 != null) {
+            } else if (enHQ2 != null) {
                 if (checkEnemyHQLocation(enHQ2) == true) {
                     Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ2);
-                    if(tryMove(directions_to_enemy_HQ)){
+                    if (tryMove(directions_to_enemy_HQ)) {
                         //System.out.println("Moved toward enhq2");
                     }
                 }
-            }
-            else if (enHQ3 != null) {
+            } else if (enHQ3 != null) {
                 if (checkEnemyHQLocation(enHQ3) == true) {
                     Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ3);
-                    if(tryMove(directions_to_enemy_HQ)){
+                    if (tryMove(directions_to_enemy_HQ)) {
                         //System.out.println("Moved toward enhq3");
                     }
                 }
@@ -219,11 +212,9 @@ public strictfp class RobotPlayer {
     }
 
 
-
 //    static void possibleEnemyHQ(MapLocation m){
 //
 //    }
-
 
 
     /**
@@ -261,7 +252,7 @@ public strictfp class RobotPlayer {
         return false;
     }
 
-    static boolean goTo(MapLocation destination) throws GameActionException{
+    static boolean goTo(MapLocation destination) throws GameActionException {
         return goTo(rc.getLocation().directionTo(destination));
     }
 
@@ -285,14 +276,15 @@ public strictfp class RobotPlayer {
         //     return tryMove(Direction.NORTH);
     }
 
-    static boolean tryDig() throws GameActionException{
+    static boolean tryDig() throws GameActionException {
         Direction dir = randomDirection();
-        if(rc.canDigDirt(dir)){
+        if (rc.canDigDirt(dir)) {
             rc.digDirt(dir);
             return true;
         }
         return false;
     }
+
     /**
      * Attempts to move in a given direction.
      *
@@ -368,23 +360,49 @@ public strictfp class RobotPlayer {
 
     //sensing the closest enemy drone robot, given a RobotInfo list robots. Good for hq and netguns
 
-    static void shootClosestEnemyDrone(RobotInfo [] info) throws GameActionException {
+    static void shootClosestEnemyDrone(RobotInfo[] info) throws GameActionException {
 
         RobotInfo closest_drone = null;
-        for (int i = 0; i < info.length; i++){
+        for (int i = 0; i < info.length; i++) {
 
             //distance to robot
             int dist = rc.getLocation().distanceSquaredTo(info[i].location);
 
-            if((info[i].type == RobotType.DELIVERY_DRONE) && dist < (rc.getLocation().distanceSquaredTo(closest_drone.location))){
+            if ((info[i].type == RobotType.DELIVERY_DRONE) && dist < (rc.getLocation().distanceSquaredTo(closest_drone.location))) {
                 closest_drone = info[i];
             }
 
         }
-        if(rc.canShootUnit(closest_drone.ID)){
+        if (rc.canShootUnit(closest_drone.ID)) {
             rc.shootUnit(closest_drone.ID);
         }
     }
+
+    //this is a method to calculate water levels based on the equation given on the game site
+    static int calculateWaterLevels() {
+        int waterLevel = 0;
+        waterLevel = (int) Math.pow(Math.E, 0.0028 * turnCount - 1.38 * Math.sin(0.00157 * turnCount - 1.73) + 1.38 * Math.sin(-1.73)) - 1;
+        return waterLevel;
+    }
+
+    //this is a method to find and mark soup locations, used by MINERS
+
+
+    static MapLocation findClosestSoup(){
+          MapLocation [] nearby_soup = rc.senseNearbySoup();
+          MapLocation closest_soup = new MapLocation(0,0);
+
+          for (MapLocation m : nearby_soup){
+              if(rc.getLocation().distanceSquaredTo(m) < rc.getLocation().distanceSquaredTo(closest_soup)){
+
+                  closest_soup = m;
+              }
+
+          }
+          return closest_soup;
+//        nearby_soup = rc.senseNearbySoup()
+    }
+
 }
 
 

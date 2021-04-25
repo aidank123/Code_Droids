@@ -7,6 +7,8 @@ import battlecode.common.RobotType;
 
 public class HQ extends RobotPlayer {
 
+    static RobotInfo[] enemy_robots;
+    static RobotInfo[] friendly_robots;
     static int outgoing_message;
 
     public static void runHQ() throws GameActionException {
@@ -20,7 +22,15 @@ public class HQ extends RobotPlayer {
         }
         //checks blockchain from every previous round
         else {
+
             Communications.updateUnitCounts();
+
+
+            if(turnCount % 10 == 0) {
+                //updates unit counts, then sends counts out to the team. These updates will be sent out every 10 rounds
+                Communications.sendGeneralBuildingUpdates();
+                Communications.sendMovingRobotUpdates();
+            }
         }
 
         //STEP 2: TAKE IN ALL DATA FROM SURROUNDINGS
@@ -29,7 +39,8 @@ public class HQ extends RobotPlayer {
         // HQ senses and shoots nearby enemy robots
 
         //list of all robots within sensory distance
-        RobotInfo[] enemy_robots = rc.senseNearbyRobots(RobotType.HQ.sensorRadiusSquared, rc.getTeam().opponent());
+         enemy_robots = rc.senseNearbyRobots(RobotType.HQ.sensorRadiusSquared, rc.getTeam().opponent());
+         friendly_robots = rc.senseNearbyRobots(RobotType.HQ.sensorRadiusSquared,rc.getTeam());
 
         //IF THERE ARE ANY ENEMY ROBOTS NEAR HQ, WE ARE GOING WANT TO IMMEDIATELY DEFEND. SEND OUT A DEFENSIVE PROTOCOL
         //AND BEGIN SHOOTING AT ANY ENEMY DRONES.
@@ -47,7 +58,7 @@ public class HQ extends RobotPlayer {
 
 
 //         if (numMiners < 5) {
-//            for (Direction dir : directions) {
+//
 //                if (rc.canBuildRobot((RobotType.MINER),dir) && rc.getTeamSoup() >= (RobotType.MINER.cost + message_cost)) {
 //                    if (tryBuild((RobotType.MINER), dir)) {
 //                        Communications.sendMinerCreation(rc.adjacentLocation(dir));
