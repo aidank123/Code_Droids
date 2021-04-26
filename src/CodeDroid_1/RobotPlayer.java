@@ -323,7 +323,7 @@ public strictfp class RobotPlayer {
                         numDrones++;
                     }
                 }else{
-                    System.out.print("They are already 2 drones");
+                    System.out.print("There are already 2 drones");
                 }
             }
 
@@ -342,6 +342,7 @@ public strictfp class RobotPlayer {
     }
 
     static void runDeliveryDrone() throws GameActionException {
+        ArrayList list = new ArrayList();
         MapLocation cowloc = null;
         Team enemy = rc.getTeam().opponent();
         if (!rc.isCurrentlyHoldingUnit()) {
@@ -349,47 +350,61 @@ public strictfp class RobotPlayer {
             RobotInfo[] robots = rc.senseNearbyRobots(GameConstants.DELIVERY_DRONE_PICKUP_RADIUS_SQUARED, enemy);
             if (robots.length > 0) {
                 for (RobotInfo robot : robots) {
+
                     //check all in radius and check for any cows
                     if (robot.type == RobotType.COW) {
+                        list.add(robot.getID());
                         //if robot in list is a cow then mark location
                         cowloc = robot.location;
-                    }
-                }
-                //make direction to cow so possible to move there
-                Direction directions_to_cow = rc.getLocation().directionTo(cowloc);
-                tryMove(directions_to_cow);
-
-            }else{
-
-                Direction move_chosen;
-
-                move_chosen = randomDirection();
-
-                while (tryMove(move_chosen) == false || (visited.contains(rc.getLocation()) == true)) {
-                    if (tryMove(randomDirection()) == true) {
-                        //RobotInfo[] nets = rc.senseNearbyRobots(GameConstants.DELIVERY_DRONE_PICKUP_RADIUS_SQUARED, enemy);
-                        //for(RobotInfo robot: nets){
-                         //   if(robot.type == RobotType.NET_GUN);
-                          //  netgun.add(rc.getLocation());
+                        Direction directions_to_cow = rc.getLocation().directionTo(cowloc);
+                        tryMove(directions_to_cow);
+                        if (rc.getLocation().isAdjacentTo(cowloc)) {
+                            rc.pickUpUnit(robot.getID());
+                            break;
                         }
-                        System.out.println("searching");
+
                     }
 
                 }
-                visited.add(rc.getLocation());
-                System.out.println("added new location to map");
-                System.out.println(rc.getLocation());
+                if(list.isEmpty()){
+                    searchGraph();
+                }
+
+            }
 
         } else {
-            Direction drone_to_HQ = rc.getLocation().directionTo(enemy_hq_location);
+            MapLocation nexttoenemyhq = enemy_hq_location.add(randomDirection());
+            Direction drone_to_HQ = rc.getLocation().directionTo(nexttoenemyhq);
             tryMove(drone_to_HQ);
-            if(!tryMove(drone_to_HQ)){
-                rc.dropUnit(Direction.WEST);
+            if (rc.getLocation().isAdjacentTo(enemy_hq_location) && rc.canDropUnit(Direction.EAST)) {
+                rc.dropUnit(Direction.EAST);
             }
 
-
-            }
         }
+        if (hq_location == null) {
+            getHQLocation();
+        } else {
+            for (Direction dir : directions) {
+
+                MapLocation defensivedrones = hq_location.add(dir);
+                Direction defensetoHQ = rc.getLocation().directionTo(defensivedrones);
+                if (rc.getLocation().isAdjacentTo(hq_location)) {
+                    break;
+                } else if (!rc.canMove(defensetoHQ)) {
+                        tryMove(randomDirection());
+
+                    }else{
+                    tryMove(defensetoHQ);
+
+
+                }
+
+
+            }
+
+
+        }
+    }
 
 
     static void runNetGun() throws GameActionException {
