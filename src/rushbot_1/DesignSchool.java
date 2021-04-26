@@ -16,6 +16,7 @@ public class DesignSchool extends RobotPlayer {
         }
         //CHECKS EVERY 20 ROUNDS
         if(rc.getRoundNum() % 20 == 0) {
+            Communications.receiveCommands();
             //Communications.updateUnitCounts(20);
         }
         for (Direction dir : directions) {

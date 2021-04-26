@@ -17,6 +17,7 @@ public class NetGun extends RobotPlayer {
         }
     //CHECKS EVERY 5 ROUNDS
         if(rc.getRoundNum() % 5 == 0) {
+            Communications.receiveCommands();
                 //Communications.updateUnitCounts(5);
         }
         for (Direction dir : directions) {
