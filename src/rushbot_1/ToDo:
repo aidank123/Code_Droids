@@ -1,6 +1,6 @@
 Do Next:
 
--Finish the receiveUpdates() method
+-test the receiveUpdates() method
 
 -keep working on early game strategy
 
@@ -15,7 +15,8 @@ Done today:
     -added a method called sendScoutID() that has the HQ choose one of the starting miners
      as a scout and sends their id to the blockchain. This miner is set as a scout until the enemy hq is discovered
     -added a calculateWaterLevels() method
-    -wrote a findClosestSoup() method, has yet to be implemented by the miners
+    -wrote a findClosestSoup() method. Could really use better pathing in general
+
 
 
 

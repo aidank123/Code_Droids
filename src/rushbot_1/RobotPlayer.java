@@ -187,21 +187,21 @@ public strictfp class RobotPlayer {
             if (enHQ1 != null) {
                 if (checkEnemyHQLocation(enHQ1) == true) {
                     Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ1);
-                    if (tryMove(directions_to_enemy_HQ)) {
+                    if (goTo(directions_to_enemy_HQ)) {
                         //System.out.println("Moved toward enhq1");
                     }
                 }
             } else if (enHQ2 != null) {
                 if (checkEnemyHQLocation(enHQ2) == true) {
                     Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ2);
-                    if (tryMove(directions_to_enemy_HQ)) {
+                    if (goTo(directions_to_enemy_HQ)) {
                         //System.out.println("Moved toward enhq2");
                     }
                 }
             } else if (enHQ3 != null) {
                 if (checkEnemyHQLocation(enHQ3) == true) {
                     Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ3);
-                    if (tryMove(directions_to_enemy_HQ)) {
+                    if (goTo(directions_to_enemy_HQ)) {
                         //System.out.println("Moved toward enhq3");
                     }
                 }
@@ -243,7 +243,7 @@ public strictfp class RobotPlayer {
      */
 
     static boolean goTo(Direction dir) throws GameActionException {
-        Direction[] toTry = {dir, dir.rotateLeft(), dir.rotateRight(), dir.rotateLeft().rotateLeft(), dir.rotateRight().rotateRight()};
+        Direction[] toTry = {dir, dir.rotateLeft(), dir.rotateRight(), dir.rotateLeft().rotateLeft(), dir.opposite().rotateRight(),dir.opposite().rotateLeft(),dir.opposite()};
         for (Direction d : toTry) {
             if (tryMove(d)) {
                 return true;

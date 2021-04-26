@@ -41,14 +41,13 @@ public class Miner extends RobotPlayer {
             }
 
             if (rc.getID() == SCOUT) {
-                System.out.println("Im scout");
                 if (enemy_hq_location == null && hq_location != null) {
                     Communications.getEnemyHQLocation();
+                    System.out.println("Im the scout");
                     findEnHQ();
                     //once the enemy hq has been located, set the scout id to something other than 0.
                 } else{
                     SCOUT = 1;
-
                 }
 
             } else {
@@ -84,6 +83,8 @@ public class Miner extends RobotPlayer {
                     }
                 } else if (goTo(findClosestSoup())) {
                     System.out.println("I moved! towards the closest soup location");
+                } else if(goTo(randomDirection())){
+                    System.out.println("moved a random direction");
                 }
             }
         }

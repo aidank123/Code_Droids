@@ -16,7 +16,6 @@ public class DeliveryDrone extends RobotPlayer {
         //CHECKS EVERY OTHER ROUND ON EVEN NUMBERS
         if(rc.getRoundNum() % 2 == 0) {
             Communications.receiveCommands();
-            //Communications.updateUnitCounts(10);
         }
 
 //        Team enemy = rc.getTeam().opponent();
