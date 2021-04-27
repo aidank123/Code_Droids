@@ -8,7 +8,9 @@ import battlecode.common.*;
 // message [1] = 1 ==> broadcasted enemy hq
 public strictfp class RobotPlayer {
 
-
+    //these will be roles given the bots from HQ brain. Each variable will be assigned an ID.
+    static int SCOUT = 0;
+    //may move back to individual robot classes^
 
     //All secret hq message commands. These will be passed into the communications methods
     // and placed into messages to the team
@@ -38,6 +40,9 @@ public strictfp class RobotPlayer {
     static ArrayList<MapLocation> Refineries = new ArrayList<>();
     static ArrayList<MapLocation> Vaporators = new ArrayList<>();
     static ArrayList<MapLocation> NetGuns = new ArrayList<>();
+
+    //arraylist to keep track of soup locations. Will be updated by hq and used by miners
+    static ArrayList<MapLocation> soup_locations = new ArrayList<>();
 
 //LISTS OF ALL CURRENT MOVING ROBOTS, USING THEIR ROBOT IDS SO THEY CAN ALSO BE SORTED
 
@@ -245,9 +250,12 @@ public strictfp class RobotPlayer {
     static boolean goTo(Direction dir) throws GameActionException {
         Direction[] toTry = {dir, dir.rotateLeft(), dir.rotateRight(), dir.rotateLeft().rotateLeft(), dir.opposite().rotateRight(),dir.opposite().rotateLeft(),dir.opposite()};
         for (Direction d : toTry) {
-            if (tryMove(d)) {
-                return true;
-            }
+            //checks we will not fall in water
+            //if(waterIncoming(d) == false){
+
+                if(tryMove(d)){
+                    System.out.println("Moved!");
+                }
         }
         return false;
     }
@@ -387,22 +395,42 @@ public strictfp class RobotPlayer {
 
     //this is a method to find and mark soup locations, used by MINERS
 
+    static MapLocation closest_soup = new MapLocation(0, 0);
 
-    static MapLocation findClosestSoup(){
-          MapLocation [] nearby_soup = rc.senseNearbySoup();
-          MapLocation closest_soup = new MapLocation(0,0);
+    static MapLocation findClosestSoup() {
 
-          for (MapLocation m : nearby_soup){
-              if(rc.getLocation().distanceSquaredTo(m) < rc.getLocation().distanceSquaredTo(closest_soup)){
 
-                  closest_soup = m;
-              }
+        MapLocation[] nearby_soup = rc.senseNearbySoup();
 
-          }
-          return closest_soup;
+        //first find the nearest sensed location
+        for (MapLocation m : nearby_soup) {
+            if (rc.getLocation().distanceSquaredTo(m) < rc.getLocation().distanceSquaredTo(closest_soup)) {
+
+                closest_soup = m;
+            }
+
+        }
+        //then compare that to all locations in inventory
+        for (MapLocation m : soup_locations){
+            if (rc.getLocation().distanceSquaredTo(m) < rc.getLocation().distanceSquaredTo(closest_soup)){
+                closest_soup = m;
+            }
+        }
+        return closest_soup;
 //        nearby_soup = rc.senseNearbySoup()
     }
 
-}
+
+        static boolean waterIncoming(Direction direction) throws GameActionException{
+
+            if(rc.senseFlooding(rc.adjacentLocation(direction))){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+
 
 

@@ -8,7 +8,7 @@ public class HQ_BRAIN extends HQ {
 
     //this class takes in all of the current information and makes decisions about what to do next, returning a message to
     // the HQ run() method which will translate the decision into a message and transmit it to the team
-
+    static boolean minerScout = false;
 
 
     public static void run() throws GameActionException {
@@ -28,8 +28,9 @@ public class HQ_BRAIN extends HQ {
                 }
             }
             //send the first miner off as a scout
-            if(friendly_robots.length == 1){
+            if(friendly_robots.length == 1 && minerScout == false){
                 Communications.sendScoutID(friendly_robots[0].ID);
+                minerScout = true;
             }
 
 

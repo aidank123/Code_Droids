@@ -8,8 +8,7 @@ import battlecode.common.RobotType;
 public class Miner extends RobotPlayer {
 
 
-    //these will be roles given the miners from HQ brain. Each variable will be assigned an ID.
-    static int SCOUT = 0;
+
 
     public static void runMiner() throws GameActionException {
 
@@ -58,9 +57,20 @@ public class Miner extends RobotPlayer {
                     }
                 //System.out.println("I refined soup! " + rc.getTeamSoup());
 
-                for (Direction dir : directions)
+                for (Direction dir : directions) {
                     if (tryMine(dir)) {
+                        if (soup_locations.contains(rc.adjacentLocation(dir)) == false) {
+                            soup_locations.add(rc.adjacentLocation(dir));
+                            Communications.sendSoupLocations(rc.adjacentLocation(dir));
+                            System.out.println("Sending new soup location ");
+                        } else {
+                            System.out.println("I already know that location");
+                        }
+                    } else if(rc.canMineSoup(dir) == false && soup_locations.contains(rc.adjacentLocation(dir))){
+                        System.out.println("Remove this soup location from your list, it has been mined");
+                        soup_locations.remove(rc.adjacentLocation(dir));
                     }
+                }
                 //System.out.println("I mined soup! " + rc.getSoupCarrying());
 
                 //To do: make it so you cannot build a building if you do not have enough soup to also transmit you are doing so

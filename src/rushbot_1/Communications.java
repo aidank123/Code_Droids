@@ -4,6 +4,8 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Transaction;
 
+import java.util.Map;
+
 public class Communications extends RobotPlayer {
 
     //secret codes for each type of robot
@@ -146,6 +148,8 @@ public class Communications extends RobotPlayer {
 //THIS METHOD CALLS ALL OF THE METHODS ABOVE AND SHOULD UPDATE THE UNIT COUNTS WHEN CALLED BY EACH ROBOT
 // Each robot will wait 10 rounds to check the blockchain, then will check the previous 10 rounds for updates
 
+
+    //may adapt this method to handle all blockchain info sent into the chat
     public static void updateUnitCounts() throws GameActionException {
         //CHECKS THE PREVIOUS ROUND
         for (Transaction t : rc.getBlock(rc.getRoundNum() - 1)) {
@@ -164,6 +168,16 @@ public class Communications extends RobotPlayer {
                         numMiners++;
 //                            Miners.add(rc.getID());
                         System.out.println("Messaged recieved: one miner added to count");
+                    }else if (mess[1] == 1){
+                        //if this is the message then a new soup location will be added
+                        if(soup_locations.contains(new MapLocation(mess[2],mess[3])) == false) {
+                            soup_locations.add(new MapLocation(mess[2], mess[3]));
+                            //immediately send this to all miners
+                            System.out.println("Sending soup loc to miners!");
+                            sendMinerUpdates(mess[2], mess[3]);
+                        }else {
+                            System.out.println("I already know that location!");
+                        }
                     }
                     break;
                 case LandscaperSecret:
@@ -356,14 +370,15 @@ public class Communications extends RobotPlayer {
         }
     }
 
-    public static void sendMinerUpdates() throws GameActionException {
+    //takes in soup location
+    public static void sendMinerUpdates(int x, int y) throws GameActionException {
         int[] message = new int[7];
         message[0] = HQSecret;
         message[1] = 2;
         message[2] = 1;
-        //messages will be filled in with necessary information for miners
-        message[3] = 0;
-        message[4] = 0;
+        //messages will be filled in with necessary information for miners (just soup locations now)
+        message[3] = x;
+        message[4] = y;
         message[5] = 0;
         message[6] = 0;
 
@@ -446,6 +461,7 @@ public class Communications extends RobotPlayer {
                             switch (mess[1]) {
                                 case (3):
                                     System.out.println("Miner received a general team update");
+                                    break;
                                 case (2):
                                     switch(mess[2]){
                                         case (0):
@@ -454,9 +470,18 @@ public class Communications extends RobotPlayer {
                                             System.out.println("Number of miners is now " + numMiners);
                                             numLandscapers = mess[4];
                                             numDrones = mess[5];
+                                            break;
                                         case(1):
-                                            System.out.println("Miner just miners update");
+                                            MapLocation soup = new MapLocation(mess[3],mess[4]);
+                                            //adding soup location to the list if they have not already been added
+                                            //if(soup_locations.contains(soup) == false) {
+                                            soup_locations.add(soup);
+                                            break;
+                                            //}else{
+                                                //System.out.println("Already added this location");
+                                            //}
                                }
+                               break;
                             }
                         }
                     }
@@ -1059,6 +1084,21 @@ public class Communications extends RobotPlayer {
             }
         }
         return scoutID;
+    }
+
+    //miners will send this into the chat and other miners will read it in
+    public static void sendSoupLocations(MapLocation m) throws GameActionException {
+
+        int[] message = new int [7];
+        message[0] = MinerSecret;
+        message[1] = 1;
+        message[2] = m.x;
+        message[3] = m.y;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+
     }
 }
 

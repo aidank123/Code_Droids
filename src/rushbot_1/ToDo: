@@ -1,21 +1,18 @@
 Do Next:
 
--test the receiveUpdates() method
+-test the receiveUpdates() method. It could be worthwhile to have all units know all unit counts in some way.
 
 -keep working on early game strategy
 
--improve miners pathing and soup production
+-improve miners pathing and soup production <------ this next!
 
 -start only doing trials on chosen maps
 
 
 Done today:
 
-    -receiveUpdates() works for miners
-    -added a method called sendScoutID() that has the HQ choose one of the starting miners
-     as a scout and sends their id to the blockchain. This miner is set as a scout until the enemy hq is discovered
-    -added a calculateWaterLevels() method
-    -wrote a findClosestSoup() method. Could really use better pathing in general
+    -had to take out avoiding water method it was causing errors
+    -added stuff to transmit soup locations and things, is working decently
 
 
 
