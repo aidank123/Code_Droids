@@ -9,50 +9,48 @@ public class Landscaper extends RobotPlayer {
     public static void runLandscaper() throws GameActionException {
 
 
-
         //step 1 set hq location
-        if(hq_location == null){
+        if (hq_location == null) {
             Communications.getHQLocation();
-        } else if(enemy_hq_location == null){
+        } else if (enemy_hq_location == null) {
             Communications.getEnemyHQLocation();
         }
         //CHECKS EVERY OTHER ROUND ON ODD NUMBERS
-        if(rc.getRoundNum() % 2 == 1) {
+        if (rc.getRoundNum() % 2 == 1) {
             Communications.receiveCommands();
             //Communications.updateUnitCounts(10);
         }
-        //if not carrying dirt, pickup dirt
 
-        if(rc.getDirtCarrying() == 0){
+        if (rc.getDirtCarrying() == 0) {
             tryDig();
         }
-
-        if(hq_location != null){
+        if (hq_location != null) {
             MapLocation bestPlaceToBuildWall = null;
-            int lowestElevation = 9999;
-            for(Direction dir : directions){
+            int lowestElevation = 10000;
+            for (Direction dir : directions) {
+
                 MapLocation tileToCheck = hq_location.add(dir);
-                if(rc.getLocation().distanceSquaredTo(tileToCheck) < 4
-                        && rc.canDepositDirt(rc.getLocation().directionTo(tileToCheck))){
-                    if(rc.senseElevation(tileToCheck) < lowestElevation) {
+
+                if (rc.getLocation().distanceSquaredTo(tileToCheck) < 4
+                        && rc.canDepositDirt(rc.getLocation().directionTo(tileToCheck))) {
+
+                    if (rc.senseElevation(tileToCheck) < lowestElevation) {
                         lowestElevation = rc.senseElevation(tileToCheck);
                         bestPlaceToBuildWall = tileToCheck;
                     }
                 }
             }
-            if(Math.random() < 0.5) {
+            if (Math.random() < 0.5) {
                 if (bestPlaceToBuildWall != null) {
                     rc.depositDirt(rc.getLocation().directionTo(bestPlaceToBuildWall));
                     System.out.println("building a wall");
                 }
             }
         }
-        if(hq_location != null){
+        if (hq_location != null) {
             goTo(hq_location);
-        }else{
+        } else {
             tryMove(randomDirection());
         }
-
-
     }
 }

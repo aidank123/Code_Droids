@@ -2,13 +2,27 @@ package rushbot_1;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+
 import battlecode.common.*;
 
 // message [1] = 0 ==> broadcasted home hq
 // message [1] = 1 ==> broadcasted enemy hq
 public strictfp class RobotPlayer {
+    //all robots will access and reset this info at the start of every turn
+    static RobotInfo[] enemy_robots;
+    static RobotInfo[] friendly_robots;
+
+    static MapLocation curr_loc;
 
 
+    //closest soup variable, used by miners
+    //static MapLocation closest_soup = new MapLocation(30, 30);
+
+    //these will be roles given the bots from HQ brain. Each variable will be assigned an ID.
+    static int SCOUT = 0;
+    static ArrayList <Integer> EXPLORERS = new ArrayList<>();
+    //may move back to individual robot classes^
 
     //All secret hq message commands. These will be passed into the communications methods
     // and placed into messages to the team
@@ -38,6 +52,9 @@ public strictfp class RobotPlayer {
     static ArrayList<MapLocation> Refineries = new ArrayList<>();
     static ArrayList<MapLocation> Vaporators = new ArrayList<>();
     static ArrayList<MapLocation> NetGuns = new ArrayList<>();
+
+    //arraylist to keep track of soup locations. Will be updated by hq and used by miners
+    static ArrayList<MapLocation> soup_locations = new ArrayList<>();
 
 //LISTS OF ALL CURRENT MOVING ROBOTS, USING THEIR ROBOT IDS SO THEY CAN ALSO BE SORTED
 
@@ -88,17 +105,22 @@ public strictfp class RobotPlayer {
         RobotPlayer.rc = rc;
         turnCount = 0;
 
+
         System.out.println("I'm a " + rc.getType() + " and I just got created!");
         while (true) {
             turnCount += 1;
             current_water_level = calculateWaterLevels();
+            //list of all robots within sensory distance
+            enemy_robots = rc.senseNearbyRobots(RobotType.HQ.sensorRadiusSquared, rc.getTeam().opponent());
+            friendly_robots = rc.senseNearbyRobots(RobotType.HQ.sensorRadiusSquared,rc.getTeam());
+            curr_loc = rc.getLocation();
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
-                //visited[turnCount - 1] = new MapLocation(rc.getLocation().x,rc.getLocation().y);
+                //visited[turnCount - 1] = new MapLocation(curr_loc.x,curr_loc.y);
                 //System.out.println("new visited spot: " + visited[turnCount - 1]);
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You can add the missing ones or rewrite this into your own control structure.
-                //System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
+                //System.out.println("I'm a " + rc.getType() + "! Location " + curr_loc);
                 switch (rc.getType()) {
                     case HQ:
                         HQ.runHQ();
@@ -153,7 +175,7 @@ public strictfp class RobotPlayer {
 
     static boolean checkEnemyHQLocation(MapLocation m) throws GameActionException {
 
-        if (rc.getLocation().isWithinDistanceSquared(m, 5) && enemy_hq_location == null) {
+        if (curr_loc.isWithinDistanceSquared(m, 5) && enemy_hq_location == null) {
             //System.out.println("This location is not the enemy hq");
             if (m == enHQ1) {
                 enHQ1 = null;
@@ -186,22 +208,22 @@ public strictfp class RobotPlayer {
             //System.out.println("Searching for enemy hq!");
             if (enHQ1 != null) {
                 if (checkEnemyHQLocation(enHQ1) == true) {
-                    Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ1);
-                    if (tryMove(directions_to_enemy_HQ)) {
+                    Direction directions_to_enemy_HQ = curr_loc.directionTo(enHQ1);
+                    if (goTo(directions_to_enemy_HQ)) {
                         //System.out.println("Moved toward enhq1");
                     }
                 }
             } else if (enHQ2 != null) {
                 if (checkEnemyHQLocation(enHQ2) == true) {
-                    Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ2);
-                    if (tryMove(directions_to_enemy_HQ)) {
+                    Direction directions_to_enemy_HQ = curr_loc.directionTo(enHQ2);
+                    if (goTo(directions_to_enemy_HQ)) {
                         //System.out.println("Moved toward enhq2");
                     }
                 }
             } else if (enHQ3 != null) {
                 if (checkEnemyHQLocation(enHQ3) == true) {
-                    Direction directions_to_enemy_HQ = rc.getLocation().directionTo(enHQ3);
-                    if (tryMove(directions_to_enemy_HQ)) {
+                    Direction directions_to_enemy_HQ = curr_loc.directionTo(enHQ3);
+                    if (goTo(directions_to_enemy_HQ)) {
                         //System.out.println("Moved toward enhq3");
                     }
                 }
@@ -242,18 +264,59 @@ public strictfp class RobotPlayer {
      * @return a random RobotType
      */
 
-    static boolean goTo(Direction dir) throws GameActionException {
-        Direction[] toTry = {dir, dir.rotateLeft(), dir.rotateRight(), dir.rotateLeft().rotateLeft(), dir.rotateRight().rotateRight()};
-        for (Direction d : toTry) {
-            if (tryMove(d)) {
-                return true;
+
+//    static void setTemperature(int factor) {
+//
+//        temperature *= factor;
+//
+//    }
+
+
+    static boolean pathTo(Direction dir) throws GameActionException {
+        Direction[] toTry = {dir, dir.rotateLeft(), dir.rotateRight(), dir.rotateLeft().rotateLeft()};
+        //on the second iteration it will let unvisited spots be moved to
+        for (int i = 1; i <= 2; i++) {
+            for (Direction d : toTry) {
+                //checks we will not fall in water
+                //if(waterIncoming(d) == false){
+                if (!visited.contains(rc.adjacentLocation(d)) || i == 2) {
+                    if (tryMove(d)) {
+                        return true;
+                        //System.out.println("Adding new location to visited list: " + rc.adjacentLocation(dir));
+                        //System.out.println("Moved!");
+                    }
+                }
+
             }
         }
         return false;
     }
 
+    static boolean goTo(Direction dir) throws GameActionException {
+        Direction[] toTry = {dir, dir.rotateLeft(), dir.rotateRight(), dir.rotateLeft().rotateLeft()};
+        //on the second iteration it will let unvisited spots be moved to
+        for (Direction d : toTry) {
+            //checks we will not fall in water
+            //if(waterIncoming(d) == false){
+            if (tryMove(d)) {
+                //System.out.println("Adding new location to visited list: " + rc.adjacentLocation(dir));
+                return true;
+                //System.out.println("Moved!");
+            }
+
+
+        }
+
+        return false;
+    }
+
+    //this is a method that will be used as a general exploring algorithm for all robots, hope its not shitty!
+
+    //static Direction
+    //dir.opposite().rotateRight(), dir.opposite().rotateLeft(), dir.opposite()
+
     static boolean goTo(MapLocation destination) throws GameActionException {
-        return goTo(rc.getLocation().directionTo(destination));
+        return goTo(curr_loc.directionTo(destination));
     }
 
     static RobotType randomSpawnedByMiner() {
@@ -265,7 +328,7 @@ public strictfp class RobotPlayer {
             if (tryMove(dir))
                 return true;
         return false;
-        // MapLocation loc = rc.getLocation();
+        // MapLocation loc = curr_loc;
         // if (loc.x < 10 && loc.x < loc.y)
         //     return tryMove(Direction.EAST);
         // else if (loc.x < 10)
@@ -295,9 +358,14 @@ public strictfp class RobotPlayer {
     static boolean tryMove(Direction dir) throws GameActionException {
         // System.out.println("I am trying to move " + dir + "; " + rc.isReady() + " " + rc.getCooldownTurns() + " " + rc.canMove(dir));
         if (rc.isReady() && rc.canMove(dir)) {
+            if (visited.contains(rc.adjacentLocation(dir)) == false) {
+                visited.add(rc.adjacentLocation(dir));
+            }
             rc.move(dir);
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -366,9 +434,9 @@ public strictfp class RobotPlayer {
         for (int i = 0; i < info.length; i++) {
 
             //distance to robot
-            int dist = rc.getLocation().distanceSquaredTo(info[i].location);
+            int dist = curr_loc.distanceSquaredTo(info[i].location);
 
-            if ((info[i].type == RobotType.DELIVERY_DRONE) && dist < (rc.getLocation().distanceSquaredTo(closest_drone.location))) {
+            if ((info[i].type == RobotType.DELIVERY_DRONE) && dist < (curr_loc.distanceSquaredTo(closest_drone.location))) {
                 closest_drone = info[i];
             }
 
@@ -388,21 +456,136 @@ public strictfp class RobotPlayer {
     //this is a method to find and mark soup locations, used by MINERS
 
 
-    static MapLocation findClosestSoup(){
-          MapLocation [] nearby_soup = rc.senseNearbySoup();
-          MapLocation closest_soup = new MapLocation(0,0);
+    static MapLocation findClosestSoup() throws GameActionException {
 
-          for (MapLocation m : nearby_soup){
-              if(rc.getLocation().distanceSquaredTo(m) < rc.getLocation().distanceSquaredTo(closest_soup)){
+        Random r = new Random();
+        MapLocation[] nearby_soup = rc.senseNearbySoup();
+        MapLocation closest_soup = new MapLocation(r.nextInt(rc.getMapWidth()), r.nextInt(rc.getMapHeight()));
+//        if(!soup_locations.isEmpty()){
+//            closest_soup = soup_locations.get(r.nextInt(soup_locations.size()));
+//        } else{
+//            closest_soup =
+//        }
 
-                  closest_soup = m;
-              }
 
-          }
-          return closest_soup;
+        //first find the nearest sensed location, compare it to the random one in the inventory
+        for (MapLocation m : nearby_soup) {
+
+            if (soup_locations.contains(m) == false) {
+                soup_locations.add(m);
+                if (Communications.checkSoupLocSent(m.x, m.y) == false) {
+                    Communications.sendSoupLocations(m);
+                    //System.out.println("Sending new soup location " + m);
+                }
+            }
+
+            if(curr_loc.distanceSquaredTo(m) < curr_loc.distanceSquaredTo(closest_soup)){
+                closest_soup = m;
+            }
+//
+        }
+
+
+//        for (MapLocation m : soup_locations) {
+//
+//            //System.out.println("All soup loc: " + m);
+//            if (curr_loc.distanceSquaredTo(m) < curr_loc.distanceSquaredTo(closest_soup)) {
+//                closest_soup = m;
+//            }
+//        }
+        //if there is no nearby soup this method will return false and the miner randomly explores
+
+        System.out.println("The closest soup is: " + closest_soup);
+        return closest_soup;
 //        nearby_soup = rc.senseNearbySoup()
     }
 
+
+    static boolean waterIncoming(Direction direction) throws GameActionException {
+
+        if (rc.senseFlooding(rc.adjacentLocation(direction))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    static void modifySoupList(MapLocation m) {
+
+        //if maplocation object passed into the method is in soup locations it will be removed
+        soup_locations.removeIf(x -> x.equals(m));
+
+    }
+
+    //method in which the robot looks around at its surrounding robots. If it does not have a certain building location
+    //in its memory it will add it
+
+    static void checkSurroundings() throws GameActionException {
+
+        //check and remove soup from list that should have been sensed but wasnt
+        //boolean contains = false;
+
+
+        for(MapLocation m : soup_locations) {
+            if (m.isWithinDistanceSquared(curr_loc, RobotType.MINER.sensorRadiusSquared) && rc.canSenseLocation(m)) {
+//
+                if (rc.canSenseLocation(m) ){
+                    if (rc.senseSoup(m) == 0){
+                        System.out.println("This location already mined: " + m);
+                        if(soup_locations.contains(m)) {
+                            modifySoupList(m);
+                        }
+                }
+
+
+                    }
+            }
+        }
+
+        for(RobotInfo r : friendly_robots){
+            switch(r.getType()){
+                case REFINERY:
+                    if(!Refineries.contains(r)){
+                        Refineries.add(r.location);
+                    }
+                    break;
+                case DESIGN_SCHOOL:
+                    if(!Design_Schools.contains(r)){
+                        Design_Schools.add(r.location);
+                    }
+                    break;
+                case FULFILLMENT_CENTER:
+                    if(!Fulfillment_Centers.contains(r)){
+                        Fulfillment_Centers.add(r.location);
+                    }
+                    break;
+                case VAPORATOR:
+                    if(!Vaporators.contains(r)){
+                        Vaporators.add(r.location);
+                    }
+                    break;
+                case NET_GUN:
+                    if(!NetGuns.contains(r)){
+                        NetGuns.add(r.location);
+                    }
+                    break;
+            }
+        }
+    }
+
+    static MapLocation nearestRefinery() {
+        MapLocation closest_refinery;
+
+        closest_refinery = hq_location;
+        for (MapLocation m : Refineries) {
+            if (curr_loc.distanceSquaredTo(m) < curr_loc.distanceSquaredTo(closest_refinery)) {
+                closest_refinery = m;
+            }
+        }
+        return closest_refinery;
+    }
 }
+
+
 
 

@@ -17,14 +17,19 @@ public class DesignSchool extends RobotPlayer {
         //CHECKS EVERY 20 ROUNDS
         if(rc.getRoundNum() % 20 == 0) {
             Communications.receiveCommands();
+
             //Communications.updateUnitCounts(20);
         }
+
+        if(CURRENT_HQ_COMMAND == EARLY_GAME_RUSH){
         for (Direction dir : directions) {
-            if (rc.canBuildRobot((RobotType.LANDSCAPER),dir) && rc.getTeamSoup() >= (RobotType.LANDSCAPER.cost + message_cost)) {
+            if (rc.canBuildRobot((RobotType.LANDSCAPER),dir) && rc.getTeamSoup() >= (RobotType.LANDSCAPER.cost + message_cost) && numLandscapers <= 8) {
                 if (tryBuild(RobotType.LANDSCAPER, dir)) {
                 Communications.sendLandscaperCreation(rc.adjacentLocation(dir));
+                numLandscapers++;
             }
             }
         }
+    }
     }
 }
