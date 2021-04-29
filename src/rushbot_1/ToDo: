@@ -1,9 +1,8 @@
 Do Next:
 
--error when removing soup locations from the list, Solve it! <------ this next!
+-error when removing soup locations from the list, Solve it! <------ this next! (gave up) (maybe should take out these blockchain communications)
 
 -finish the receiveUpdates() method. It could be worthwhile to have all units know all unit counts in some way.
-*like how it is for miners now
 
 -keep working on early game strategy
 
