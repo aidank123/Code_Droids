@@ -17,6 +17,7 @@ public class FulfillmentCenter extends RobotPlayer {
         }
         //CHECKS EVERY 20 ROUNDS
         if(rc.getRoundNum() % 20 == 2) {
+            Communications.receiveCommands();
             //Communications.updateUnitCounts(20);
         }
         for (Direction dir : directions)

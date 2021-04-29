@@ -1,18 +1,22 @@
-Just finished: You now have the miners checking the blockchain every 10 rounds for the last 10 rounds
-, starting at 10. The miners also send a message to the blockchain when they build a new design school.
+Do Next:
 
-To Do: Keep thinking about how to organize the communication and begin filling in the rest of the framework:
+-Finish the receiveUpdates() method
 
----Start by having the miners send a when they build any other type of building. It would be nice to have a fairly
-accurate count and memory of all robots and their locations on our team.
+-keep working on early game strategy
+
+-improve miners pathing and soup production
+
+-start only doing trials on chosen maps
 
 
--Today's updates: -finished the update unit counts method
-                 -now all robots access the blockchain for messages at different rounds, to save on bytecode costs
-                       * hq checks every round
-                       * miners, landscapers, drones every 10 rounds
-                       * buildings: every 20 rounds
-                 -the hq is the only robot that keeps track of unit counts, because it will be making the decisions
-                 and the individual units dont need to know.
-                 -method shootClosestEnemyDrone() in RobotPlayer can be used by netguns and hq
-                 -started building the hq defense. also added more hq messages to send to team
+Done today:
+
+    -receiveUpdates() works for miners
+    -added a method called sendScoutID() that has the HQ choose one of the starting miners
+     as a scout and sends their id to the blockchain. This miner is set as a scout until the enemy hq is discovered
+    -added a calculateWaterLevels() method
+    -wrote a findClosestSoup() method, has yet to be implemented by the miners
+
+
+
+

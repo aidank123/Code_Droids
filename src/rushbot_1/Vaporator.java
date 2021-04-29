@@ -15,6 +15,7 @@ public class Vaporator extends RobotPlayer {
         }
         //CHECKS EVERY 20 ROUNDS
         if(rc.getRoundNum() % 20 == 6) {
+            Communications.receiveCommands();
             //Communications.updateUnitCounts(20);
         }
 
