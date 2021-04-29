@@ -32,8 +32,8 @@ public class Landscaper extends RobotPlayer {
             int lowestElevation = 9999;
             for(Direction dir : directions){
                 MapLocation tileToCheck = hq_location.add(dir);
-                if(rc.getLocation().distanceSquaredTo(tileToCheck) < 4
-                        && rc.canDepositDirt(rc.getLocation().directionTo(tileToCheck))){
+                if(curr_loc.distanceSquaredTo(tileToCheck) < 4
+                        && rc.canDepositDirt(curr_loc.directionTo(tileToCheck))){
                     if(rc.senseElevation(tileToCheck) < lowestElevation) {
                         lowestElevation = rc.senseElevation(tileToCheck);
                         bestPlaceToBuildWall = tileToCheck;
@@ -42,7 +42,7 @@ public class Landscaper extends RobotPlayer {
             }
             if(Math.random() < 0.5) {
                 if (bestPlaceToBuildWall != null) {
-                    rc.depositDirt(rc.getLocation().directionTo(bestPlaceToBuildWall));
+                    rc.depositDirt(curr_loc.directionTo(bestPlaceToBuildWall));
                     System.out.println("building a wall");
                 }
             }

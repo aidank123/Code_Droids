@@ -47,7 +47,7 @@ public class DeliveryDrone extends RobotPlayer {
                     }
                 }
                 //make direction to cow so possible to move there
-                Direction directions_to_cow = rc.getLocation().directionTo(cowloc);
+                Direction directions_to_cow = curr_loc.directionTo(cowloc);
                 tryMove(directions_to_cow);
                 // Pick up a first robot within range
                 rc.pickUpUnit(robots[0].getID());
@@ -56,5 +56,7 @@ public class DeliveryDrone extends RobotPlayer {
             // No close robots, so search for robots within sight radius
             tryMove(randomDirection());
         }
+
+        tryMove(randomDirection());
     }
 }

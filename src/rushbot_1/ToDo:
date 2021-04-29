@@ -1,18 +1,17 @@
 Do Next:
 
--test the receiveUpdates() method. It could be worthwhile to have all units know all unit counts in some way.
+-error when removing soup locations from the list, Solve it! <------ this next!
+
+-finish the receiveUpdates() method. It could be worthwhile to have all units know all unit counts in some way.
+*like how it is for miners now
 
 -keep working on early game strategy
 
--improve miners pathing and soup production <------ this next!
+-improve miners pathing and soup production
 
 -start only doing trials on chosen maps
 
 
-Done today:
-
-    -had to take out avoiding water method it was causing errors
-    -added stuff to transmit soup locations and things, is working decently
 
 
 

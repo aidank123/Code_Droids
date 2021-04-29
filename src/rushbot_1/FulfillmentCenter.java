@@ -15,16 +15,22 @@ public class FulfillmentCenter extends RobotPlayer {
         } else if(enemy_hq_location == null){
             Communications.getEnemyHQLocation();
         }
-        //CHECKS EVERY 20 ROUNDS
+        //CHECKS FOR COMMANDS AND UPDATES EVERY 20 ROUNDS
         if(rc.getRoundNum() % 20 == 2) {
             Communications.receiveCommands();
-            //Communications.updateUnitCounts(20);
+            Communications.receiveUpdates();
         }
-        for (Direction dir : directions)
-            if (rc.canBuildRobot((RobotType.DELIVERY_DRONE),dir) && rc.getTeamSoup() >= (RobotType.DELIVERY_DRONE.cost + message_cost)) {
-                if (tryBuild(RobotType.DELIVERY_DRONE, dir)) {
-                    Communications.sendDroneCreation(rc.adjacentLocation(dir));
-                }
+
+        if(CURRENT_HQ_COMMAND == EARLY_GAME_RUSH){
+            if(numDrones < 5){
+                for (Direction dir : directions)
+                    if (rc.canBuildRobot((RobotType.DELIVERY_DRONE),dir) && rc.getTeamSoup() >= (RobotType.DELIVERY_DRONE.cost + message_cost)) {
+                        if (tryBuild(RobotType.DELIVERY_DRONE, dir)) {
+                            Communications.sendDroneCreation(rc.adjacentLocation(dir));
+                        }
+            }
+        }
+
             }
 
     }
