@@ -7,8 +7,6 @@ import battlecode.common.RobotType;
 
 public class HQ extends RobotPlayer {
 
-    static RobotInfo[] enemy_robots;
-    static RobotInfo[] friendly_robots;
     static int outgoing_message;
 
     public static void runHQ() throws GameActionException {
@@ -17,7 +15,8 @@ public class HQ extends RobotPlayer {
 
         if (rc.getRoundNum() == 1) {
             //System.out.println(rc.);
-            Communications.sendHQLocation(rc.getLocation());
+            Communications.sendHQLocation(curr_loc);
+            Communications.sendEntireTeamCommand(EARLY_GAME_RUSH);
 
         }
         //checks blockchain from every previous round
@@ -38,9 +37,6 @@ public class HQ extends RobotPlayer {
 
         // HQ senses and shoots nearby enemy robots
 
-        //list of all robots within sensory distance
-         enemy_robots = rc.senseNearbyRobots(RobotType.HQ.sensorRadiusSquared, rc.getTeam().opponent());
-         friendly_robots = rc.senseNearbyRobots(RobotType.HQ.sensorRadiusSquared,rc.getTeam());
 
         //IF THERE ARE ANY ENEMY ROBOTS NEAR HQ, WE ARE GOING WANT TO IMMEDIATELY DEFEND. SEND OUT A DEFENSIVE PROTOCOL
         //AND BEGIN SHOOTING AT ANY ENEMY DRONES.

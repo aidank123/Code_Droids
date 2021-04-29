@@ -4,6 +4,9 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Transaction;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 public class Communications extends RobotPlayer {
 
     //secret codes for each type of robot
@@ -146,6 +149,8 @@ public class Communications extends RobotPlayer {
 //THIS METHOD CALLS ALL OF THE METHODS ABOVE AND SHOULD UPDATE THE UNIT COUNTS WHEN CALLED BY EACH ROBOT
 // Each robot will wait 10 rounds to check the blockchain, then will check the previous 10 rounds for updates
 
+
+    //may adapt this method to handle all blockchain info sent into the chat
     public static void updateUnitCounts() throws GameActionException {
         //CHECKS THE PREVIOUS ROUND
         for (Transaction t : rc.getBlock(rc.getRoundNum() - 1)) {
@@ -162,7 +167,7 @@ public class Communications extends RobotPlayer {
                 case MinerSecret:
                     if (mess[1] == 0) {
                         numMiners++;
-//                            Miners.add(rc.getID());
+//
                         System.out.println("Messaged recieved: one miner added to count");
                     }
                     break;
@@ -356,14 +361,15 @@ public class Communications extends RobotPlayer {
         }
     }
 
-    public static void sendMinerUpdates() throws GameActionException {
+    //takes in soup location
+    public static void sendMinerUpdates(int x, int y) throws GameActionException {
         int[] message = new int[7];
         message[0] = HQSecret;
         message[1] = 2;
         message[2] = 1;
-        //messages will be filled in with necessary information for miners
-        message[3] = 0;
-        message[4] = 0;
+        //messages will be filled in with necessary information for miners (just soup locations now)
+        message[3] = x;
+        message[4] = y;
         message[5] = 0;
         message[6] = 0;
 
@@ -445,19 +451,62 @@ public class Communications extends RobotPlayer {
                         if (mess[0] == HQSecret) {
                             switch (mess[1]) {
                                 case (3):
-                                    System.out.println("Miner received a general team update");
+                                    //System.out.println("Miner received a general team update");
+                                    break;
                                 case (2):
-                                    switch(mess[2]){
+                                    switch (mess[2]) {
                                         case (0):
-                                            System.out.println("Miner received moving robots update");
+                                            //System.out.println("Miner received moving robots update");
                                             numMiners = mess[3];
-                                            System.out.println("Number of miners is now " + numMiners);
+                                            //System.out.println("Number of miners is now " + numMiners);
                                             numLandscapers = mess[4];
                                             numDrones = mess[5];
-                                        case(1):
-                                            System.out.println("Miner just miners update");
-                               }
+                                            break;
+                                    }
+                                    break;
+                                case (1):
+                                    switch (mess[2]) {
+                                        case (0):
+                                            numDesignSchools = mess[3];
+                                            numRefinery = mess[4];
+                                            numFulfillmentCenters = mess[5];
+                                            numVaporators = mess[6];
+                                            break;
+                                    }
+                                    break;
                             }
+                        } else if (mess[0] == MinerSecret) {
+                            if (mess[1] == 1) {
+                                MapLocation soup = new MapLocation(mess[2], mess[3]);
+                                //if this is the message then a new soup location will be added
+                                if (soup_locations.contains(soup) == false) {
+
+                                    soup_locations.add(soup);
+                                    //if this robot happens to not know about this spot in its list of visited squares, it adds it
+                                    //may as well do this if already accessing the blockchain for other locations, should help the explorers
+                                    if(!visited.contains(soup)){
+                                        visited.add(soup);
+                                    }
+                                    System.out.println("Adding new soup location: " + new MapLocation(mess[2], mess[3]));
+                                    //immediately send this to all miners
+                                } else {
+                                    //System.out.println("I already know that soup location: " + new MapLocation(mess[2], mess[3]));
+
+                                }
+                            }
+
+                        } else if (mess[0] == DesignSchoolSecret){
+                            if(mess[1] == 0){
+                                Design_Schools.add(new MapLocation(mess[2], mess[3]));
+                                System.out.println("Miner adding design school location");
+                            }
+
+                        } else if (mess[0] == RefinerySecret){
+                            if(mess[1] == 0){
+                                Refineries.add(new MapLocation(mess[2], mess[3]));
+                                System.out.println("Miner adding refinery location");
+                            }
+
                         }
                     }
                 }
@@ -468,7 +517,23 @@ public class Communications extends RobotPlayer {
                 for (int i = rc.getRoundNum() - 2; i < rc.getRoundNum(); i++) {
                     for (Transaction t : rc.getBlock(i)) {
                         int[] mess = t.getMessage();
-
+                        if (mess[0] == HQSecret) {
+                            switch (mess[1]) {
+                                case (3):
+                                    System.out.println("Landscaper received a general team update");
+                                case (2):
+                                    switch (mess[2]) {
+                                        case (0):
+                                            System.out.println("Landscaper received moving robots update");
+                                            numMiners = mess[3];
+                                            //System.out.println("Number of miners is now " + numMiners);
+                                            numLandscapers = mess[4];
+                                            numDrones = mess[5];
+                                        case (2):
+                                            System.out.println("Just landscaper update");
+                                    }
+                            }
+                        }
                     }
                 }
                 break;
@@ -477,7 +542,23 @@ public class Communications extends RobotPlayer {
                 for (int i = rc.getRoundNum() - 2; i < rc.getRoundNum(); i++) {
                     for (Transaction t : rc.getBlock(i)) {
                         int[] mess = t.getMessage();
-
+                        if (mess[0] == HQSecret) {
+                            switch (mess[1]) {
+                                case (3):
+                                    System.out.println("Drone received a general team update");
+                                case (2):
+                                    switch (mess[2]) {
+                                        case (0):
+                                            System.out.println("Drone received moving robots update");
+                                            numMiners = mess[3];
+                                            System.out.println("Number of miners is now " + numMiners);
+                                            numLandscapers = mess[4];
+                                            numDrones = mess[5];
+                                        case (3):
+                                            System.out.println("Drone update");
+                                    }
+                            }
+                        }
                     }
                 }
                 break;
@@ -487,7 +568,23 @@ public class Communications extends RobotPlayer {
                 for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
                     for (Transaction t : rc.getBlock(i)) {
                         int[] mess = t.getMessage();
-
+                        if (mess[0] == HQSecret) {
+                            switch (mess[1]) {
+                                case (3):
+                                    System.out.println("Design School received a general team update");
+                                case (1):
+                                    switch (mess[2]) {
+                                        case (0):
+                                            System.out.println("Design School building update");
+                                            numDesignSchools = mess[3];
+                                            numRefinery = mess[4];
+                                            numFulfillmentCenters = mess[5];
+                                            numVaporators = mess[6];
+                                        case (1):
+                                            System.out.println("Design schools update");
+                                    }
+                            }
+                        }
                     }
                 }
                 break;
@@ -497,7 +594,23 @@ public class Communications extends RobotPlayer {
                 for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
                     for (Transaction t : rc.getBlock(i)) {
                         int[] mess = t.getMessage();
-
+                        if (mess[0] == HQSecret) {
+                            switch (mess[1]) {
+                                case (3):
+                                    System.out.println("Refinery received a general team update");
+                                case (1):
+                                    switch (mess[2]) {
+                                        case (0):
+                                            System.out.println("Refinery received building update");
+                                            numDesignSchools = mess[3];
+                                            numRefinery = mess[4];
+                                            numFulfillmentCenters = mess[5];
+                                            numVaporators = mess[6];
+                                        case (2):
+                                            System.out.println("Refinery update");
+                                    }
+                            }
+                        }
                     }
                 }
                 break;
@@ -507,7 +620,23 @@ public class Communications extends RobotPlayer {
                 for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
                     for (Transaction t : rc.getBlock(i)) {
                         int[] mess = t.getMessage();
-
+                        if (mess[0] == HQSecret) {
+                            switch (mess[1]) {
+                                case (3):
+                                    System.out.println("Fulfillment received a general team update");
+                                case (1):
+                                    switch (mess[2]) {
+                                        case (0):
+                                            System.out.println("Fulfillment building update");
+                                            numDesignSchools = mess[3];
+                                            numRefinery = mess[4];
+                                            numFulfillmentCenters = mess[5];
+                                            numVaporators = mess[6];
+                                        case (3):
+                                            System.out.println("Fulfillment update");
+                                    }
+                            }
+                        }
                     }
                 }
                 break;
@@ -517,7 +646,23 @@ public class Communications extends RobotPlayer {
                 for (int i = rc.getRoundNum() - 20; i < rc.getRoundNum(); i++) {
                     for (Transaction t : rc.getBlock(i)) {
                         int[] mess = t.getMessage();
-
+                        if (mess[0] == HQSecret) {
+                            switch (mess[1]) {
+                                case (3):
+                                    System.out.println("Vaporators received a general team update");
+                                case (1):
+                                    switch (mess[2]) {
+                                        case (0):
+                                            System.out.println("Vaporators building update");
+                                            numDesignSchools = mess[3];
+                                            numRefinery = mess[4];
+                                            numFulfillmentCenters = mess[5];
+                                            numVaporators = mess[6];
+                                        case (4):
+                                            System.out.println("Vaporators update");
+                                    }
+                            }
+                        }
                     }
                 }
                 break;
@@ -527,13 +672,27 @@ public class Communications extends RobotPlayer {
                 for (int i = rc.getRoundNum() - 5; i < rc.getRoundNum(); i++) {
                     for (Transaction t : rc.getBlock(i)) {
                         int[] mess = t.getMessage();
+                        if (mess[0] == HQSecret) {
+                            switch (mess[1]) {
+                                case (3):
+                                    System.out.println("Netgun received a general team update");
+                                case (1):
+                                    switch (mess[2]) {
+                                        case (0):
+                                            System.out.println("Netgun building update");
 
+                                            numDesignSchools = mess[3];
+                                            numRefinery = mess[4];
+                                            numFulfillmentCenters = mess[5];
+                                            numVaporators = mess[6];
+                                        case (5):
+                                            System.out.println("Netgun update");
+                                    }
+                            }
+                        }
                     }
                 }
                 break;
-
-
-
         }
     }
 
@@ -740,7 +899,6 @@ public class Communications extends RobotPlayer {
 
     public static void receiveCommands() throws GameActionException {
 
-
         switch (rc.getType()) {
             case MINER:
                 //Miners get updated every other round, so must check the blocks from the previous 2 rounds
@@ -752,12 +910,12 @@ public class Communications extends RobotPlayer {
                         if (mess[0] == HQSecret && mess[1] == 4) {
                             switch (mess[2]) {
                                 case (0):
-                                    System.out.println("Miner received Team command: " + mess[6]);
+                                    //System.out.println("Miner received Team command: " + mess[6]);
                                     CURRENT_HQ_COMMAND = mess[6];
                                     break;
                                 case (2):
                                     if (mess[3] == 0 || mess[3] == 1) {
-                                        System.out.println("Miner received Moving Robot/Miner update: " + mess[6]);
+                                        //System.out.println("Miner received Moving Robot/Miner update: " + mess[6]);
                                         CURRENT_HQ_COMMAND = mess[6];
                                     }
                                     break;
@@ -917,8 +1075,7 @@ public class Communications extends RobotPlayer {
                         }
                     }
                 }
-                    break;
-
+                break;
 
 
         }
@@ -926,7 +1083,7 @@ public class Communications extends RobotPlayer {
 
     //method to send which robot ID will be the scout at the start of the game
 
-    public static void sendScoutID (int robotID) throws GameActionException {
+    public static void sendScoutID(int robotID) throws GameActionException {
         int[] message = new int[7];
         message[0] = HQSecret;
         message[1] = 2;
@@ -939,7 +1096,9 @@ public class Communications extends RobotPlayer {
         }
     }
 
-    public static int receiveScoutID () throws GameActionException {
+
+
+    public static int receiveScoutID() throws GameActionException {
         int scoutID = 0;
         for (int i = 1; i < rc.getRoundNum(); i++) {
             for (Transaction t : rc.getBlock(i)) {
@@ -951,8 +1110,65 @@ public class Communications extends RobotPlayer {
         }
         return scoutID;
     }
-}
 
+    static void sendExplorerID(int robotID) throws GameActionException {
+        int[] message = new int[7];
+        message[0] = HQSecret;
+        message[1] = 2;
+        message[2] = 1;
+        message[3] = 45;
+        message[4] = robotID;
+
+        if (rc.canSubmitTransaction(message, 3)) {
+            rc.submitTransaction(message, 3);
+        }
+    }
+
+    public static void receiveExplorerID() throws GameActionException {
+
+        for (int i = rc.getRoundNum() - 2; i < rc.getRoundNum(); i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] mess = t.getMessage();
+                if (mess[0] == HQSecret && mess[1] == 2 && mess[2] == 1 && mess[3] == 45) {
+                    EXPLORERS.add(mess[4]);
+
+                }
+            }
+        }
+
+    }
+
+    //miners will send this into the chat and other miners will read it in
+    public static void sendSoupLocations(MapLocation m) throws GameActionException {
+
+        int[] message = new int[7];
+        message[0] = MinerSecret;
+        message[1] = 1;
+        message[2] = m.x;
+        message[3] = m.y;
+//low cost messages cost 1 soup
+        if (rc.canSubmitTransaction(message, 1)) {
+            rc.submitTransaction(message, 1);
+        }
+
+    }
+
+
+    //method will check if this soup location has already been sent in chat, takes in the x and y of the location
+    public static boolean checkSoupLocSent(int x, int y) throws GameActionException {
+        for (int i = 1; i < turnCount; i++) {
+            for (Transaction t : rc.getBlock(i)) {
+                int[] mess = t.getMessage();
+                if ((mess[0] == MinerSecret) && (mess[1] == 1) && (mess[2] == x) && (mess[3] == y)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+}
 //at the end of this method, CURRENT_HQ_COMMANDS should be reset to empty
         //if the message relates to the robot, it will add it to its list of current HQ commands
 
