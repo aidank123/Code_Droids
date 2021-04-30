@@ -16,7 +16,6 @@ public class HQ extends RobotPlayer {
         if (rc.getRoundNum() == 1) {
             //System.out.println(rc.);
             Communications.sendHQLocation(curr_loc);
-            Communications.sendEntireTeamCommand(EARLY_GAME_RUSH);
 
         }
         //checks blockchain from every previous round
@@ -50,6 +49,7 @@ public class HQ extends RobotPlayer {
 
 //This line runs the HQ_BRAIN and receives what messages will be sent to the team based on all updated information,
         HQ_BRAIN.run();
+
 
 
 
