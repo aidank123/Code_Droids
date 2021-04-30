@@ -483,10 +483,16 @@ public strictfp class RobotPlayer {
 //            closest_soup =
 //        }
 
+        MapLocation closest_soup = new MapLocation(0,0);
+        MapLocation[] corners = {new MapLocation(0,rc.getMapHeight()), new MapLocation(rc.getMapWidth(),0), new MapLocation(rc.getMapWidth(),rc.getMapHeight())};
+        for(MapLocation corner : corners){
+            if(curr_loc.distanceSquaredTo(corner) < curr_loc.distanceSquaredTo(closest_soup)){
+                closest_soup = corner;
+            }
+        }
 
         //first find the nearest sensed location, compare it to the random one in the inventory
         for (MapLocation m : nearby_soup) {
-
             if (soup_locations.contains(m) == false) {
                 soup_locations.add(m);
                 if (Communications.checkSoupLocSent(m.x, m.y) == false) {
@@ -498,17 +504,20 @@ public strictfp class RobotPlayer {
             if(curr_loc.distanceSquaredTo(m) < curr_loc.distanceSquaredTo(closest_soup)){
                 closest_soup = m;
             }
-//
+        }
+        if(nearby_soup.length == 0){//If no soup is nearby
+            for(MapLocation m : soup_locations){
+                if(curr_loc.distanceSquaredTo(m) < curr_loc.distanceSquaredTo(closest_soup)){
+                    closest_soup = m;
+                }
+            }
+            if(soup_locations.isEmpty()){//If no soup is known
+                closest_soup = new MapLocation(r.nextInt(rc.getMapWidth()),r.nextInt(rc.getMapHeight()));
+            }
         }
 
 
-//        for (MapLocation m : soup_locations) {
-//
-//            //System.out.println("All soup loc: " + m);
-//            if (curr_loc.distanceSquaredTo(m) < curr_loc.distanceSquaredTo(closest_soup)) {
-//                closest_soup = m;
-//            }
-//        }
+
         //if there is no nearby soup this method will return false and the miner randomly explores
 
         System.out.println("The closest soup is: " + closest_soup);
