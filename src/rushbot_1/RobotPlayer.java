@@ -1,8 +1,12 @@
+//Aidan Kelley, Matthew Barlow, Jack Peterson, Adam Shaw, Alexander Wood
+//RobotPlayer.java
+//4/29/21
+//BattleCode
+//We created a code to defend our HQ. The main goal is to farm enough soup to build walls around hq and defend using drones.
+//HQ will send out commands at certain rounds and goals met to tell robots to change what they are doing.
+
 package rushbot_1;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import battlecode.common.*;
 
@@ -15,13 +19,14 @@ public strictfp class RobotPlayer {
 
     static MapLocation curr_loc;
 
+    static MapLocation closest_soup = new MapLocation(0,0);
 
     //closest soup variable, used by miners
     //static MapLocation closest_soup = new MapLocation(30, 30);
 
     //these will be roles given the bots from HQ brain. Each variable will be assigned an ID.
     static int SCOUT = 0;
-    static ArrayList <Integer> EXPLORERS = new ArrayList<>();
+    static int EXPLORER = 0;
     //may move back to individual robot classes^
 
     //All secret hq message commands. These will be passed into the communications methods
@@ -29,6 +34,7 @@ public strictfp class RobotPlayer {
 
     static int DEFEND_HQ = 450;
     static int EARLY_GAME_RUSH = 145;
+    static int DEFEND_AND_BUILD = 382;
 
 
     //global int will keep track of the current water level
@@ -43,7 +49,7 @@ public strictfp class RobotPlayer {
     static MapLocation enHQ1;
     static MapLocation enHQ2;
     static MapLocation enHQ3;
-    static ArrayList<MapLocation> visited = new ArrayList<>();
+    static HashMap<MapLocation, Integer> visited = new HashMap<MapLocation, Integer>();
 
 //LISTS OF ALL CURRENT STATIONARY ROBOT POSITIONS
 
@@ -279,7 +285,7 @@ public strictfp class RobotPlayer {
             for (Direction d : toTry) {
                 //checks we will not fall in water
                 //if(waterIncoming(d) == false){
-                if (!visited.contains(rc.adjacentLocation(d)) || i == 2) {
+                //if (!visited.contains(rc.adjacentLocation(d)) || i == 2) {
                     if (tryMove(d)) {
                         return true;
                         //System.out.println("Adding new location to visited list: " + rc.adjacentLocation(dir));
@@ -287,7 +293,7 @@ public strictfp class RobotPlayer {
                     }
                 }
 
-            }
+            //}
         }
         return false;
     }
@@ -358,9 +364,16 @@ public strictfp class RobotPlayer {
     static boolean tryMove(Direction dir) throws GameActionException {
         // System.out.println("I am trying to move " + dir + "; " + rc.isReady() + " " + rc.getCooldownTurns() + " " + rc.canMove(dir));
         if (rc.isReady() && rc.canMove(dir)) {
-            if (visited.contains(rc.adjacentLocation(dir)) == false) {
-                visited.add(rc.adjacentLocation(dir));
+
+            if (visited.containsKey(rc.adjacentLocation(dir)) == false) {
+                visited.put(rc.adjacentLocation(dir),1);
+            }else {
+                int i = visited.get(rc.adjacentLocation(dir));
+                //adding one to the number of times visited
+                i = i + 1;
+                visited.replace(rc.adjacentLocation(dir),i);
             }
+
             rc.move(dir);
             return true;
         } else {
@@ -441,8 +454,10 @@ public strictfp class RobotPlayer {
             }
 
         }
-        if (rc.canShootUnit(closest_drone.ID)) {
-            rc.shootUnit(closest_drone.ID);
+        if(closest_drone != null) {
+            if (rc.canShootUnit(closest_drone.ID)) {
+                rc.shootUnit(closest_drone.ID);
+            }
         }
     }
 
@@ -460,7 +475,8 @@ public strictfp class RobotPlayer {
 
         Random r = new Random();
         MapLocation[] nearby_soup = rc.senseNearbySoup();
-        MapLocation closest_soup = new MapLocation(r.nextInt(rc.getMapWidth()), r.nextInt(rc.getMapHeight()));
+
+        closest_soup = enHQ2;
 //        if(!soup_locations.isEmpty()){
 //            closest_soup = soup_locations.get(r.nextInt(soup_locations.size()));
 //        } else{
@@ -474,7 +490,7 @@ public strictfp class RobotPlayer {
             if (soup_locations.contains(m) == false) {
                 soup_locations.add(m);
                 if (Communications.checkSoupLocSent(m.x, m.y) == false) {
-                    Communications.sendSoupLocations(m);
+                    //Communications.sendSoupLocations(m);
                     //System.out.println("Sending new soup location " + m);
                 }
             }
@@ -582,7 +598,13 @@ public strictfp class RobotPlayer {
                 closest_refinery = m;
             }
         }
+
         return closest_refinery;
+    }
+
+    static void setExplorer(int ex){
+
+        EXPLORER = ex;
     }
 }
 

@@ -259,8 +259,8 @@ public class Communications extends RobotPlayer {
         message[5] = numFulfillmentCenters;
         message[6] = numVaporators;
 
-        if (rc.canSubmitTransaction(message, 3)) {
-            rc.submitTransaction(message, 3);
+        if (rc.canSubmitTransaction(message, 1)) {
+            rc.submitTransaction(message, 1);
         }
     }
 
@@ -356,8 +356,8 @@ public class Communications extends RobotPlayer {
         message[5] = numDrones;
         message[6] = 0;
 
-        if (rc.canSubmitTransaction(message, 3)) {
-            rc.submitTransaction(message, 3);
+        if (rc.canSubmitTransaction(message, 1)) {
+            rc.submitTransaction(message, 1);
         }
     }
 
@@ -484,9 +484,9 @@ public class Communications extends RobotPlayer {
                                     soup_locations.add(soup);
                                     //if this robot happens to not know about this spot in its list of visited squares, it adds it
                                     //may as well do this if already accessing the blockchain for other locations, should help the explorers
-                                    if(!visited.contains(soup)){
-                                        visited.add(soup);
-                                    }
+//                                    if(!visited.containsKey(soup)){
+//                                        visited.add(soup);
+//                                    }
                                     System.out.println("Adding new soup location: " + new MapLocation(mess[2], mess[3]));
                                     //immediately send this to all miners
                                 } else {
@@ -1130,7 +1130,7 @@ public class Communications extends RobotPlayer {
             for (Transaction t : rc.getBlock(i)) {
                 int[] mess = t.getMessage();
                 if (mess[0] == HQSecret && mess[1] == 2 && mess[2] == 1 && mess[3] == 45) {
-                    EXPLORERS.add(mess[4]);
+                    //EXPLORERS.add(mess[4]);
 
                 }
             }

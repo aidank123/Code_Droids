@@ -14,14 +14,14 @@ public class HQ_BRAIN extends HQ {
     public static void run() throws GameActionException {
 
         System.out.println(turnCount);
-        if (turnCount < 1000) {
+        if (turnCount < 450)  {
 
-            if (turnCount % 10 == 0) {
+            if (turnCount % 10 == 0 || turnCount < 10) {
                 Communications.sendEntireTeamCommand(EARLY_GAME_RUSH);
             }
 
             for (Direction dir : directions) {
-                if ((rc.canBuildRobot((RobotType.MINER), dir) && rc.getTeamSoup() >= (RobotType.MINER.cost + message_cost) && numMiners < 9)) {
+                if ((rc.canBuildRobot((RobotType.MINER), dir) && rc.getTeamSoup() >= (RobotType.MINER.cost + message_cost) && numMiners < 5)) {
                     if (tryBuild((RobotType.MINER), dir)) {
                         Communications.sendMinerCreation(rc.adjacentLocation(dir));
                         //1 in 3 chance of creating an explorer, after creating one the first round
@@ -37,6 +37,12 @@ public class HQ_BRAIN extends HQ {
             if (friendly_robots.length == 1 && minerScout == false) {
                 Communications.sendScoutID(friendly_robots[0].ID);
                 minerScout = true;
+            }
+
+
+        } else {
+            if (turnCount % 10 == 0) {
+                Communications.sendEntireTeamCommand(DEFEND_AND_BUILD);
             }
 
 

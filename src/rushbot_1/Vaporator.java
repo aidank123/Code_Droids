@@ -14,10 +14,10 @@ public class Vaporator extends RobotPlayer {
             Communications.getEnemyHQLocation();
         }
         //CHECKS EVERY 20 ROUNDS
-        if(rc.getRoundNum() % 20 == 6) {
-            Communications.receiveCommands();
-            //Communications.updateUnitCounts(20);
-        }
+//        if(rc.getRoundNum() % 20 == 6) {
+//            Communications.receiveCommands();
+//            //Communications.updateUnitCounts(20);
+//        }
 
     }
 
