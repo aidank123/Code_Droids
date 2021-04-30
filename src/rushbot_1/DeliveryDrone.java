@@ -11,11 +11,11 @@ public class DeliveryDrone extends RobotPlayer {
 
     public static void runDeliveryDrone() throws GameActionException {
 
-     ArrayList list = new ArrayList();
-     //arraylist stores robot IDS and resets every time method is ran
-     list.clear();
-     //setting team for opponents
-     Team enemy = rc.getTeam().opponent();
+        ArrayList list = new ArrayList();
+        //arraylist stores robot IDS and resets every time method is ran
+        list.clear();
+        //setting team for opponents
+        Team enemy = rc.getTeam().opponent();
         int enemiesdrowned = 0;
         //step 1 set hq location
         if (hq_location == null) {
@@ -47,7 +47,6 @@ public class DeliveryDrone extends RobotPlayer {
 
 
         MapLocation cowloc;
-
 
 
         boolean hasenemyunit = false;
@@ -97,12 +96,12 @@ public class DeliveryDrone extends RobotPlayer {
 //                if there are no enemies or cows in the vicinity then the drone will move around
                 //to find cows or enemies
                 if (list.isEmpty()) {
-                    Pathing.sickPathing(randomDirection());
+                    tryMove(randomDirection());
                 }
-
+            }
             } else {
 
-                if (hasenemyunit == true) {
+                if (hasenemyunit) {
                     //if it has an enemy unit looks for closest water
                     for (Direction dir : directions) {
                         if (rc.senseFlooding(rc.getLocation().add(dir))) {
@@ -111,12 +110,13 @@ public class DeliveryDrone extends RobotPlayer {
                             rc.dropUnit(dir);
                             hasenemyunit = false;
                         } else {
-                            Pathing.sickPathing(randomDirection());
+                            tryMove(randomDirection());
                         }
 
                     }
                 }
-                if (hascow == true) {
+
+                if (hascow) {
                     //if the drone has a cow, the drones set a location and direction for enemy hq
                     Direction toenemyhq = rc.getLocation().directionTo(enemy_hq_location);
                     if (rc.getLocation().isAdjacentTo(enemy_hq_location)) {
@@ -125,8 +125,10 @@ public class DeliveryDrone extends RobotPlayer {
                         hascow = false;
                     } else {
                         if (!rc.canMove(toenemyhq)) {
-                            Pathing.sickPathing(randomDirection());
+                            tryMove(randomDirection());
                             //if you can't move closer, random simulated annealing
+                        } else if (enemy_hq_location == null) {
+                            tryMove(randomDirection());
                         } else {
                             tryMove(toenemyhq);
                         }
@@ -150,12 +152,9 @@ public class DeliveryDrone extends RobotPlayer {
             }
 
 
-        }
 
-
-
-            }
-        }
+    }
+}
 
 
 
